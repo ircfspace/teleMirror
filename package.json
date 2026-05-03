@@ -21,8 +21,8 @@
     "cheerio": "^1.2.0"
   },
   "build": {
-    "appId": "com.telemirror.app",
-    "productName": "teleMirror",
+    "appId": "com.tele-mirror.app",
+    "productName": "tele-mirror",
     "directories": {
       "output": "dist"
     },
@@ -44,8 +44,9 @@
     "extraFiles": [],
     "extraResources": [],
     "win": {
-      "target": "dir",
-      "icon": "assets/teleMirror.png"
+      "target": "zip",
+      "icon": "assets/teleMirror.png",
+      "artifactName": "tele-mirror-${arch}-win.zip"
     },
     "compression": "maximum",
     "asar": true
