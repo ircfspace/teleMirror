@@ -32,7 +32,7 @@ jobs:
       
     - name: Build Electron app
       run: |
-        npx electron-builder --win --${{ matrix.arch }} --publish never
+        npx electron-builder --win --${{ matrix.arch }} --publish never --config.compression=maximum
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

@@ -33,7 +33,15 @@
     "win": {
       "target": "zip",
       "icon": "assets/teleMirror.png",
-      "artifactName": "teleMirror-${arch}-win.zip"
-    }
+      "artifactName": "teleMirror-${arch}-win.zip",
+      "compression": "maximum",
+      "asarUnpack": [
+        "**/node_modules/ffmpeg-static/**"
+      ]
+    },
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    },
+    "compression": "maximum"
   }
 }
