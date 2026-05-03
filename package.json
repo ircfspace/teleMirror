@@ -9,16 +9,16 @@
     "build": "electron-builder --publish=never",
     "build-win": "electron-builder --win --publish=never",
     "build-dir": "electron-builder --win dir --publish=never",
-    "package": "npm run build-dir && powershell -Command \"Compress-Archive -Path dist/win-unpacked/* -DestinationPath teleMirror-win.zip -Force\""
+    "package": "npm run build-dir && powershell -Command \"New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'teleMirror-win.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force\""
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "express": "^4.22.1"
+    "express": "^4.22.1",
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
     "electron": "^41.5.0",
-    "electron-builder": "^24.13.3",
-    "cheerio": "^1.2.0"
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.tele-mirror.app",
@@ -52,7 +52,7 @@
       "icon": "assets/teleMirror.png",
       "artifactName": "tele-mirror-${arch}-win.zip"
     },
-    "compression": "maximum",
+        "compression": "maximum",
     "asar": true
   }
 }
