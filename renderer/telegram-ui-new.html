@@ -1017,49 +1017,43 @@
             const month = date.getMonth() + 1;
             const day = date.getDate();
 
-            console.log("Converting date:", year, month, day);
+            console.log("Formatting Gregorian date:", year, month, day);
 
-            const [jy, jm, jd] = this.gregorianToPersian(year, month, day);
-
-            console.log("Persian date result:", jy, jm, jd);
-
-            const persianMonths = [
-              "Farvardin",
-              "Ordibehesht",
-              "Khordad",
-              "Tir",
-              "Mordad",
-              "Shahrivar",
-              "Mehr",
-              "Aban",
-              "Azar",
-              "Dey",
-              "Bahman",
-              "Esfand",
+            const gregorianMonths = [
+              "January",
+              "February", 
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
             ];
 
             const today = new Date();
-            const [todayJy, todayJm, todayJd] = this.gregorianToPersian(
-              today.getFullYear(),
-              today.getMonth() + 1,
-              today.getDate(),
-            );
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth() + 1;
+            const todayDay = today.getDate();
 
-            // Format based on recency
-            if (jy === todayJy && jm === todayJm && jd === todayJd) {
+            // Format based on recency using Gregorian dates
+            if (year === todayYear && month === todayMonth && day === todayDay) {
               return "Today";
-            } else if (jy === todayJy && jm === todayJm && jd === todayJd - 1) {
+            } else if (year === todayYear && month === todayMonth && day === todayDay - 1) {
               return "Yesterday";
-            } else if (jy === todayJy && jm === todayJm) {
-              return `${jd} ${persianMonths[jm - 1]}`;
-            } else if (jy === todayJy) {
-              return `${jd} ${persianMonths[jm - 1]}`;
+            } else if (year === todayYear && month === todayMonth) {
+              return `${day} ${gregorianMonths[month - 1]}`;
+            } else if (year === todayYear) {
+              return `${day} ${gregorianMonths[month - 1]}`;
             } else {
-              return `${jd} ${persianMonths[jm - 1]} ${jy}`;
+              return `${day} ${gregorianMonths[month - 1]} ${year}`;
             }
           } catch (error) {
             console.error(
-              "Persian date conversion error:",
+              "Gregorian date formatting error:",
               error,
               "for date:",
               dateString,
