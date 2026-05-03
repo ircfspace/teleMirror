@@ -23,6 +23,8 @@
     "files": [
       "main.js",
       "preload.js",
+      "http-client.js",
+      "telegram-parser.js",
       "server/**/*",
       "renderer/**/*",
       "assets/**/*",
