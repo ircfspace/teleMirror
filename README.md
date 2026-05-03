@@ -80,10 +80,10 @@ The application uses two sources for channel information:
 
 ### Adding a New Channel
 You can add channels in the following formats:
-- Username: `nimaclick`
-- With @: `@nimaclick`
-- Telegram URL: `https://t.me/nimaclick`
-- Short URL: `t.me/nimaclick`
+- Username: `ircfspace`
+- With @: `@ircfspace`
+- Telegram URL: `https://t.me/ircfspace`
+- Short URL: `t.me/ircfspace`
 
 ### Channel Data Structure
 ```javascript
