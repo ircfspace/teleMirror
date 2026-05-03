@@ -32,7 +32,8 @@
     ],
     "win": {
       "target": "zip",
-      "icon": "assets/teleMirror.png"
+      "icon": "assets/teleMirror.png",
+      "artifactName": "teleMirror-${arch}-win.zip"
     }
   }
 }
