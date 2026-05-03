@@ -1,18 +1,24 @@
 {
-  "name": "teleMirror",
-  "version": "1.0.0",
+  "name": "tele-mirror",
+  "description": "A simple desktop client for viewing Telegram channels, specifically designed for complex filtering environments like Iran",
+  "author": "ircfspace <ircfspace@gmail.com> (https://ircf.space/)",
+  "version": "1.0.8",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --publish=never",
+    "build-win": "electron-builder --win --publish=never",
+    "build-dir": "electron-builder --win dir --publish=never",
+    "package": "npm run build-dir && powershell -Command \"Compress-Archive -Path dist/win-unpacked/* -DestinationPath teleMirror-win.zip -Force\""
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cheerio": "^1.2.0",
     "express": "^4.22.1"
   },
   "devDependencies": {
     "electron": "^41.5.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "cheerio": "^1.2.0"
   },
   "build": {
     "appId": "com.telemirror.app",
@@ -23,25 +29,25 @@
     "files": [
       "main.js",
       "preload.js",
-      "http-client.js",
+      "http-client.js", 
       "telegram-parser.js",
       "server/**/*",
       "renderer/**/*",
       "assets/**/*",
-      "package.json"
+      "package.json",
+      "!**/node_modules/*",
+      "!**/test-*",
+      "!**/*.md",
+      "!**/.git/**",
+      "!**/.github/**"
     ],
+    "extraFiles": [],
+    "extraResources": [],
     "win": {
-      "target": "zip",
-      "icon": "assets/teleMirror.png",
-      "artifactName": "teleMirror-${arch}-win.zip",
-      "compression": "maximum",
-      "asarUnpack": [
-        "**/node_modules/ffmpeg-static/**"
-      ]
+      "target": "dir",
+      "icon": "assets/teleMirror.png"
     },
-    "electronDownload": {
-      "mirror": "https://npmmirror.com/mirrors/electron/"
-    },
-    "compression": "maximum"
+    "compression": "maximum",
+    "asar": true
   }
 }
