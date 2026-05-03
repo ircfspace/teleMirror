@@ -8,7 +8,9 @@
     "start": "electron .",
     "build": "electron-builder --publish=never",
     "build-win": "electron-builder --win --publish=never",
+    "build-linux": "electron-builder --linux --publish=never",
     "build-dir": "electron-builder --win dir --publish=never",
+    "build-linux-dir": "electron-builder --linux dir --publish=never",
     "package": "npm run build-dir && powershell -Command \"New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'teleMirror-win.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force\""
   },
   "dependencies": {
@@ -52,7 +54,12 @@
       "icon": "assets/teleMirror.png",
       "artifactName": "tele-mirror-${arch}-win.zip"
     },
-        "compression": "maximum",
+    "linux": {
+      "target": "tar.gz",
+      "icon": "assets/teleMirror.png",
+      "artifactName": "tele-mirror-${arch}-linux.tar.gz"
+    },
+    "compression": "maximum",
     "asar": true
   }
 }
