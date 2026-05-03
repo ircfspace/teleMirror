@@ -240,7 +240,7 @@ function createServer(port = 9876) {
           author: post.sender_name || converted.channel.title,
           isOwn: false,
           media: [] // GitHub JSON doesn't seem to include media
-        })).reverse(); // Reverse to show newest first (like Telegram parser)
+        })); // Keep original order from GitHub data
       }
       
       return converted;
