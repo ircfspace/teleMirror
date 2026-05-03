@@ -133,3 +133,15 @@ This project is licensed under the MIT License.
 For bug reports or suggestions:
 - Create an Issue on GitHub
 - Send a message to the project's Telegram channel
+
+## Donate
+
+teleMirror is provided as a free and open-source application. If you find this project useful and would like to support its development, you can make a donation:
+
+https://ircf.space/contacts.html#donate
+
+Your support helps us maintain and improve the project for everyone.
+
+## Credits
+
+This project incorporates some methods and techniques inspired by ezyTel, which served as a reference for certain implementation approaches.
