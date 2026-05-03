@@ -29,12 +29,8 @@
       "package.json"
     ],
     "win": {
-      "target": "nsis",
+      "target": "zip",
       "icon": "assets/teleMirror.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
     }
   }
 }
