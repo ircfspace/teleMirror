@@ -27,6 +27,7 @@ async function createWindow() {
             height: appConfig.window.height,
             frame: true,
             resizable: appConfig.window.resizable,
+            title: 'TeleMirror',
             devTools: isDev(),
             devToolsKeyCombination: isDev(),
             icon: appConfig.paths.icon,
@@ -37,6 +38,9 @@ async function createWindow() {
             }
         });
 
+        // Set window title explicitly after creation
+        mainWindow.setTitle('TeleMirror');
+
         // Force fullscreen after window is created and loaded
         // mainWindow.webContents.once('did-finish-load', () => {
         //     // Use simple fullscreen instead of true fullscreen
@@ -45,6 +49,12 @@ async function createWindow() {
 
         console.log('Loading HTML file...');
         mainWindow.loadFile(appConfig.paths.mainHtml);
+        
+        // Set title again after HTML is loaded
+        mainWindow.webContents.once('did-finish-load', () => {
+            mainWindow.setTitle('TeleMirror');
+        });
+        
         console.log('Window loaded successfully');
     } catch (error) {
         console.error('Error in createWindow:', error);
