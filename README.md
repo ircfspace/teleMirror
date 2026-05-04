@@ -4,7 +4,7 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 
 ## Features
 
-- � **No Telegram Required**: View channels without installing the official Telegram app
+- 👀 **No Telegram Required**: View channels without installing the official Telegram app
 - 🔄 **Multi-Source Access**: Direct Telegram access + GitHub JSON backup for maximum reliability
 - 🛡️ **Advanced Bypass**: Multiple proxy methods including Google Translate to circumvent filtering
 - 🎨 **Clean Interface**: Modern UI optimized for content reading
