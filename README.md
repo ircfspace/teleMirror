@@ -19,23 +19,27 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 ## Installation
 
 ### Prerequisites
+
 - Node.js (version 16 or higher)
 - npm
 
 ### Installation Steps
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/ircfspace/teleMirror.git
 cd teleMirror
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the application:
+
 ```bash
 npm start
 ```
@@ -60,10 +64,12 @@ teleMirror/
 The application uses two sources for channel information:
 
 ### 1. Direct Telegram
+
 - Uses Google Translate proxies
 - Support for multiple methods to bypass filtering
 
 ### 2. GitHub JSON API
+
 - URL: `https://raw.githubusercontent.com/ircfspace/teleFeed/refs/heads/export/{channelname}.json`
 - Channel name must be in lowercase
 - Used as backup source when Telegram is unavailable
@@ -79,13 +85,16 @@ The application uses two sources for channel information:
 ## Development
 
 ### Adding a New Channel
+
 You can add channels in the following formats:
+
 - Username: `ircfspace`
 - With @: `@ircfspace`
 - Telegram URL: `https://t.me/ircfspace`
 - Short URL: `t.me/ircfspace`
 
 ### Channel Data Structure
+
 ```javascript
 {
   username: "channel_name",
@@ -100,26 +109,28 @@ You can add channels in the following formats:
 ### Common Issues
 
 1. **Channel not adding**
-   - Check if the channel address is correct
-   - Make sure the channel hasn't been added before
+    - Check if the channel address is correct
+    - Make sure the channel hasn't been added before
 
 2. **Messages not loading**
-   - Check your internet connection
-   - Wait a few minutes and try again
+    - Check your internet connection
+    - Wait a few minutes and try again
 
 3. **Empty items in list**
-   - Restart the application
-   - Clear browser cache
+    - Restart the application
+    - Clear browser cache
 
 ## Logging
 
 To view application logs:
+
 - In development mode: Browser developer console
 - In production mode: Electron console logs
 
 ## Contributing
 
 To contribute to the project:
+
 1. Create a fork
 2. Apply your changes in a new branch
 3. Create a Pull Request
@@ -131,6 +142,7 @@ This project is licensed under the MIT License.
 ## Support
 
 For bug reports or suggestions:
+
 - Create an Issue on GitHub
 - Send a message to the project's Telegram channel
 
