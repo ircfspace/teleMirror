@@ -223,13 +223,15 @@
                     // Add default channels if list is empty
                     if (this.channels.length === 0) {
                         this.channels = [
-                            { username: 'vahidonline', name: 'وحید آنلاین', loading: false },
-                            { username: 'ircfspace', name: 'اینترنت آزاد', loading: false }
+                            { username: 'ircfspace', name: 'IRCF | اینترنت آزاد برای همه', loading: false, pinned: true },
+                            { username: 'vahidonline', name: 'وحید آنلاین', loading: false }
                         ];
                         this.saveChannels();
                         // Set first channel as active
                         this.activeChannel = this.channels[0].username;
                     } else {
+                        // Ensure ircfspace channel exists and is pinned
+                        this.ensurePinnedChannel();
                         this.activeChannel = null;
                     }
 
@@ -393,7 +395,41 @@
                     this.setActiveChannel(username);
                 }
 
+                // Ensure ircfspace channel exists and is pinned
+                ensurePinnedChannel() {
+                    const pinnedUsername = 'ircfspace';
+                    let pinnedChannel = this.channels.find(c => c.username === pinnedUsername);
+                    
+                    if (!pinnedChannel) {
+                        // Add pinned channel if it doesn't exist
+                        pinnedChannel = {
+                            username: pinnedUsername,
+                            name: 'IRCF | اینترنت آزاد برای همه',
+                            loading: false,
+                            pinned: true
+                        };
+                        this.channels.unshift(pinnedChannel);
+                    } else {
+                        // Ensure it's marked as pinned
+                        pinnedChannel.pinned = true;
+                        // Move to top if not already there
+                        const index = this.channels.findIndex(c => c.username === pinnedUsername);
+                        if (index > 0) {
+                            this.channels.splice(index, 1);
+                            this.channels.unshift(pinnedChannel);
+                        }
+                    }
+                    
+                    this.saveChannels();
+                }
+
                 removeChannel(username) {
+                    // Prevent removal of pinned channels
+                    if (username === 'ircfspace') {
+                        alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
+                        return;
+                    }
+                    
                     this.channels = this.channels.filter((c) => c.username !== username);
                     this.saveChannels();
                     // Clear cache for removed channel
@@ -432,8 +468,21 @@
                             channel.name.length > 0
                     );
 
-                    validChannels.forEach((channel) => {
+                    // Sort channels: pinned channels first, then others
+                    const sortedChannels = validChannels.sort((a, b) => {
+                        // ircfspace (pinned) always comes first
+                        if (a.username === 'ircfspace') return -1;
+                        if (b.username === 'ircfspace') return 1;
+                        // For any other pinned channels, sort by pinned status
+                        if (a.pinned && !b.pinned) return -1;
+                        if (!a.pinned && b.pinned) return 1;
+                        // Otherwise maintain original order
+                        return 0;
+                    });
+
+                    sortedChannels.forEach((channel) => {
                         const channelEl = document.createElement('div');
+                        const isPinned = channel.username === 'ircfspace';
                         channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
 
                         const avatarText =
@@ -455,7 +504,7 @@
                         channelEl.innerHTML = `
               <div class="channel-avatar">${avatarHtml}</div>
               <div class="channel-info">
-                <div class="channel-name">${channel.name}</div>
+                <div class="channel-name">${channel.name}${isPinned ? ' 📌' : ''}</div>
                 <div class="channel-username">@${channel.username}</div>
               </div>
             `;
@@ -481,6 +530,13 @@
                                 (c) => c.username === this.activeChannel
                             );
                             const channelName = channel ? channel.name : this.activeChannel;
+                            
+                            // Prevent deletion of pinned channels
+                            if (this.activeChannel === 'ircfspace') {
+                                alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
+                                return;
+                            }
+                            
                             if (confirm(`Delete channel "${channelName}"?`)) {
                                 this.removeChannel(this.activeChannel);
                             }
@@ -511,8 +567,11 @@
                         }
                         title.textContent = channel.name;
                         subtitle.textContent = `@${channel.username}`;
-                        // Show Leave Channel button when channel is selected
-                        if (leaveButton) leaveButton.style.display = 'block';
+                        // Show Leave Channel button when channel is selected, but hide for pinned channels
+                        if (leaveButton) {
+                            const isPinned = channel.username === 'ircfspace' || channel.pinned;
+                            leaveButton.style.display = isPinned ? 'none' : 'block';
+                        }
                     } else {
                         avatar.textContent = '?';
                         title.textContent = 'Select a channel';
@@ -871,8 +930,16 @@
                     const container = document.getElementById('channelsContainer');
                     container.innerHTML = '';
 
-                    channels.forEach((channel) => {
+                    // Sort filtered channels: pinned channels first
+                    const sortedChannels = channels.sort((a, b) => {
+                        if (a.username === 'ircfspace') return -1;
+                        if (b.username === 'ircfspace') return 1;
+                        return 0;
+                    });
+
+                    sortedChannels.forEach((channel) => {
                         const channelEl = document.createElement('div');
+                        const isPinned = channel.username === 'ircfspace';
                         channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
 
                         const avatarText = channel.name.charAt(0).toUpperCase();
@@ -891,7 +958,7 @@
                         channelEl.innerHTML = `
               <div class="channel-avatar">${avatarHtml}</div>
               <div class="channel-info">
-                <div class="channel-name">${channel.name}</div>
+                <div class="channel-name">${channel.name}${isPinned ? ' 📌' : ''}</div>
                 <div class="channel-username">@${channel.username}</div>
               </div>
             `;
