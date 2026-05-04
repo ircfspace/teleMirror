@@ -16,6 +16,9 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 - 🌍 **Localized**: Persian calendar and RTL support for better user experience
 - 📊 **Rich Content**: Display posts with views, reactions, and media previews
 
+
+![Cover](.github/images/screenshot.png)
+
 ## Installation
 
 ### Prerequisites
