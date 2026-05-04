@@ -9,8 +9,7 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 - 🛡️ **Advanced Bypass**: Multiple proxy methods including Google Translate to circumvent filtering
 - 🎨 **Clean Interface**: Modern UI optimized for content reading
 - 💾 **Smart Caching**: Reduces requests and improves loading speed
-- 🌍 **Localized**: Persian calendar and RTL support for better user experience
-- 📊 **Rich Content**: Display posts with views, reactions, and media previews
+- 📊 **Rich Content**: Display posts with views, and media previews
 
 
 ![Cover](.github/images/screenshot.png)
