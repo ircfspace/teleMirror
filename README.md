@@ -156,4 +156,4 @@ Your support helps us maintain and improve the project for everyone.
 
 ## Credits
 
-This project incorporates some methods and techniques inspired by ezyTel, which served as a reference for certain implementation approaches.
+This project incorporates some methods and techniques inspired by ezyTel, which served as a reference for certain implementation approaches. The project also utilizes the teleFeed repository (https://github.com/ircfspace/teleFeed) as a backup data source for channel content.
