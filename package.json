@@ -55,6 +55,11 @@
             "icon": "assets/teleMirror.png",
             "artifactName": "tele-mirror-${arch}-win.zip"
         },
+        "linux": {
+            "target": "tar.gz",
+            "icon": "assets/teleMirror.png",
+            "artifactName": "tele-mirror-${arch}-linux.tar.gz"
+        },
         "compression": "maximum",
         "asar": true
     }
