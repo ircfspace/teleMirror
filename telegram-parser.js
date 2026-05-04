@@ -176,6 +176,12 @@ class TelegramParser {
                 content += `<a href="${href}" target="_blank">${text}</a>`;
             } else if (elem.tagName === 'br') {
                 content += '<br>';
+            } else if (elem.tagName === 'code') {
+                const codeText = $elem.text().trim();
+                content += `<code>${codeText}</code>`;
+            } else if (elem.tagName === 'pre') {
+                const preText = $elem.text().trim();
+                content += `<pre>${preText}</pre>`;
             } else if ($elem.hasClass('emoji')) {
                 const emojiText = $elem.find('b').text().trim();
                 content += emojiText;
