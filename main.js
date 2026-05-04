@@ -42,7 +42,7 @@ async function createWindow() {
         });
 
         console.log('Loading HTML file...');
-        mainWindow.loadFile('renderer/telegram-ui-new.html');
+        mainWindow.loadFile('renderer/telegram-ui.html');
         console.log('Window loaded successfully');
     } catch (error) {
         console.error('Error in createWindow:', error);

@@ -52,7 +52,7 @@ teleMirror/
 ├── server/
 │   └── server.js          # Express backend server
 ├── renderer/
-│   └── telegram-ui-new.html # User interface
+│   └── telegram-ui.html # User interface
 ├── http-client.js          # HTTP client with proxy support
 ├── telegram-parser.js      # Telegram content parser
 ├── preload.js             # Electron preload script
