@@ -34,5 +34,8 @@ contextBridge.exposeInMainWorld('api', {
     },
     closeWindow: () => {
         ipcRenderer.send('close-window');
+    },
+    getAppConfig: () => {
+        return ipcRenderer.invoke('get-app-config');
     }
 });

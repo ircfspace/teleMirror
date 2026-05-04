@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const { createServer } = require('./server/server');
+const appConfig = require('./config/app.config');
 
 const isDev = () => process.env.NODE_ENV === 'development';
 
@@ -16,19 +17,19 @@ async function createWindow() {
         Menu.setApplicationMenu(null);
 
         console.log('Creating server...');
-        serverInstance = await createServer(9876);
-        console.log('Server created on port 9876');
+        serverInstance = await createServer(appConfig.server.port);
+        console.log(`Server created on port ${appConfig.server.port}`);
 
         console.log('Creating window...');
 
         mainWindow = new BrowserWindow({
-            width: 900,
-            height: 600,
+            width: appConfig.window.width,
+            height: appConfig.window.height,
             frame: true,
-            resizable: false,
+            resizable: appConfig.window.resizable,
             devTools: isDev(),
             devToolsKeyCombination: isDev(),
-            icon: path.join(__dirname, 'assets', 'teleMirror.png'),
+            icon: appConfig.paths.icon,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js'),
                 nodeIntegration: false,
@@ -43,7 +44,7 @@ async function createWindow() {
         // });
 
         console.log('Loading HTML file...');
-        mainWindow.loadFile('renderer/telegram-ui.html');
+        mainWindow.loadFile(appConfig.paths.mainHtml);
         console.log('Window loaded successfully');
     } catch (error) {
         console.error('Error in createWindow:', error);
@@ -61,6 +62,10 @@ ipcMain.on('close-window', () => {
     if (mainWindow) {
         mainWindow.close();
     }
+});
+
+ipcMain.handle('get-app-config', () => {
+    return appConfig.app;
 });
 
 // Cleanup function to close server
