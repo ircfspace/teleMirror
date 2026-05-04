@@ -1,65 +1,68 @@
 {
-  "name": "tele-mirror",
-  "description": "A simple desktop client for viewing Telegram channels, specifically designed for complex filtering environments like Iran",
-  "author": "ircfspace <ircfspace@gmail.com> (https://ircf.space/)",
-  "version": "1.0.10",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --publish=never",
-    "build-win": "electron-builder --win --publish=never",
-    "build-linux": "electron-builder --linux --publish=never",
-    "build-dir": "electron-builder --win dir --publish=never",
-    "build-linux-dir": "electron-builder --linux dir --publish=never",
-    "package": "npm run build-dir && powershell -Command \"New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'teleMirror-win.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force\""
-  },
-  "dependencies": {
-    "axios": "^1.6.0",
-    "express": "^4.22.1",
-    "cheerio": "^1.2.0"
-  },
-  "devDependencies": {
-    "electron": "^41.5.0",
-    "electron-builder": "^24.13.3"
-  },
-  "build": {
-    "appId": "com.tele-mirror.app",
-    "productName": "tele-mirror",
-    "directories": {
-      "output": "dist"
+    "name": "tele-mirror",
+    "description": "A simple desktop client for viewing Telegram channels, specifically designed for complex filtering environments like Iran",
+    "author": "ircfspace <ircfspace@gmail.com> (https://ircf.space/)",
+    "version": "1.0.10",
+    "main": "main.js",
+    "scripts": {
+        "dev": "npm start",
+        "start": "electron .",
+        "build": "electron-builder --publish=never",
+        "build-win": "electron-builder --win --publish=never",
+        "build-linux": "electron-builder --linux --publish=never",
+        "build-dir": "electron-builder --win dir --publish=never",
+        "build-linux-dir": "electron-builder --linux dir --publish=never",
+        "package": "npm run build-dir && powershell -Command \"New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'teleMirror-win.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force\"",
+        "format": "prettier --write . --config .prettierrc --ignore-path .prettierignore --cache"
     },
-    "files": [
-      "main.js",
-      "preload.js",
-      "http-client.js", 
-      "telegram-parser.js",
-      "server/**/*",
-      "renderer/**/*",
-      "assets/**/*",
-      "package.json",
-      "!**/node_modules/*",
-      "!**/test-*",
-      "!**/*.md",
-      "!**/.git/**",
-      "!**/.github/**",
-      "!**/builder-debug.yml",
-      "!**/builder-effective-config.yaml",
-      "!**/*-debug.yml",
-      "!**/*-debug.yaml"
-    ],
-    "extraFiles": [],
-    "extraResources": [],
-    "win": {
-      "target": "zip",
-      "icon": "assets/teleMirror.png",
-      "artifactName": "tele-mirror-${arch}-win.zip"
+    "dependencies": {
+        "axios": "^1.6.0",
+        "cheerio": "^1.2.0",
+        "express": "^4.22.1",
+        "prettier": "^3.8.3"
     },
-    "linux": {
-      "target": "tar.gz",
-      "icon": "assets/teleMirror.png",
-      "artifactName": "tele-mirror-${arch}-linux.tar.gz"
+    "devDependencies": {
+        "electron": "^41.5.0",
+        "electron-builder": "^26.8.1"
     },
-    "compression": "maximum",
-    "asar": true
-  }
+    "build": {
+        "appId": "com.tele-mirror.app",
+        "productName": "tele-mirror",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "main.js",
+            "preload.js",
+            "http-client.js",
+            "telegram-parser.js",
+            "server/**/*",
+            "renderer/**/*",
+            "assets/**/*",
+            "package.json",
+            "!**/node_modules/*",
+            "!**/test-*",
+            "!**/*.md",
+            "!**/.git/**",
+            "!**/.github/**",
+            "!**/builder-debug.yml",
+            "!**/builder-effective-config.yaml",
+            "!**/*-debug.yml",
+            "!**/*-debug.yaml"
+        ],
+        "extraFiles": [],
+        "extraResources": [],
+        "win": {
+            "target": "zip",
+            "icon": "assets/teleMirror.png",
+            "artifactName": "tele-mirror-${arch}-win.zip"
+        },
+        "linux": {
+            "target": "tar.gz",
+            "icon": "assets/teleMirror.png",
+            "artifactName": "tele-mirror-${arch}-tar.gz"
+        },
+        "compression": "maximum",
+        "asar": true
+    }
 }
