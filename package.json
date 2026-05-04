@@ -2,7 +2,7 @@
     "name": "tele-mirror",
     "description": "A simple desktop client for viewing Telegram channels, specifically designed for complex filtering environments like Iran",
     "author": "ircfspace <ircfspace@gmail.com> (https://ircf.space/)",
-    "version": "1.0.10",
+    "version": "1.3.3",
     "main": "main.js",
     "scripts": {
         "dev": "npm start",
@@ -34,6 +34,7 @@
             "preload.js",
             "http-client.js",
             "telegram-parser.js",
+            "config/**/*",
             "server/**/*",
             "renderer/**/*",
             "assets/**/*",
