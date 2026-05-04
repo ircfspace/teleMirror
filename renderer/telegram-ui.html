@@ -15,11 +15,6 @@
         <div class="title-bar">
             <div class="title-bar-content">
                 <div class="title-bar-text">Telegram Mirror</div>
-                <div class="theme-toggle" id="themeToggle">
-                    <button class="theme-switch" id="themeSwitch">
-                        <span class="theme-icon">🌙</span>
-                    </button>
-                </div>
             </div>
             <div class="window-controls">
                 <button class="window-button minimize-button" id="minimizeButton">−</button>
@@ -38,7 +33,7 @@
                             id="fetchInput"
                             placeholder="Enter channel username"
                         />
-                        <button class="add-channel-button primary" id="addChannelButton">+</button>
+                        <button class="add-channel-button" id="addChannelButton">+</button>
                     </div>
                 </div>
                 <div class="channels-container" id="channelsContainer">
@@ -85,8 +80,18 @@
             </div>
             <div class="progress-info">
                 <span class="progress-percent" id="progressPercent">0%</span>
+                <div class="progress-message" id="progressMessage">Initializing...</div>
             </div>
-            <div class="progress-message" id="progressMessage">Initializing...</div>
+        </div>
+
+        <!-- Bottom Menu Bar -->
+        <div class="bottom-menu">
+            <button class="menu-btn" id="themeSwitchBottom" title="تغییر تم">
+                <span class="menu-icon">🌙</span>
+            </button>
+            <button class="menu-btn" id="donateBtnBottom" title="حمایت مالی">
+                <span class="menu-icon">☕</span>
+            </button>
         </div>
 
         <script>
@@ -879,6 +884,7 @@
                 setupEventListeners() {
                     const fetchInput = document.getElementById('fetchInput');
                     const addChannelButton = document.getElementById('addChannelButton');
+                    const donateButton = document.getElementById('donateBtnBottom');
 
                     // Search functionality
                     fetchInput.addEventListener('input', (e) => {
@@ -894,6 +900,13 @@
                             await this.addChannel();
                         }
                     });
+
+                    // Donation button functionality
+                    if (donateButton) {
+                        donateButton.addEventListener('click', () => {
+                            window.open('https://ircf.space/contacts.html#donate', '_blank');
+                        });
+                    }
                 }
 
                 searchChannels(searchTerm) {
@@ -1049,7 +1062,7 @@
                     // Load saved theme or default to dark
                     const savedTheme = localStorage.getItem('telegramTheme') || 'dark';
                     const body = document.body;
-                    const themeIcon = document.querySelector('.theme-icon');
+                    const themeIcon = document.querySelector('#themeSwitchBottom .menu-icon');
 
                     if (savedTheme === 'light') {
                         body.classList.add('light-theme');
@@ -1062,7 +1075,7 @@
                 }
 
                 static setupEventListeners() {
-                    const themeSwitch = document.getElementById('themeSwitch');
+                    const themeSwitch = document.getElementById('themeSwitchBottom');
 
                     if (themeSwitch) {
                         themeSwitch.addEventListener('click', () => {
@@ -1073,7 +1086,7 @@
 
                 static toggleTheme() {
                     const body = document.body;
-                    const themeIcon = document.querySelector('.theme-icon');
+                    const themeIcon = document.querySelector('#themeSwitchBottom .menu-icon');
 
                     if (body.classList.contains('light-theme')) {
                         // Switch to dark
