@@ -303,6 +303,17 @@ body.light-theme .header-leave-button:hover {
     transform: translateY(-1px);
 }
 
+/* Light theme for View Channel button */
+body.light-theme .header-view-button {
+    background: #007bff;
+    color: white;
+}
+
+body.light-theme .header-view-button:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
 body.light-theme ::-webkit-scrollbar-track {
     background: #f1f3f4;
 }
@@ -488,6 +499,13 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     text-overflow: ellipsis;
 }
 
+/* Header buttons container */
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Leave Channel button in header */
 .header-leave-button {
     background: #e74c3c;
@@ -504,6 +522,25 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 
 .header-leave-button:hover {
     background: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* View Channel button in header */
+.header-view-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    -webkit-app-region: no-drag;
+}
+
+.header-view-button:hover {
+    background: #2980b9;
     transform: translateY(-1px);
 }
 
@@ -852,7 +889,8 @@ body.light-theme .menu-btn:active {
     color: #e4e4e4;
     font-size: 12px;
     float: left;
-    direction: auto;
+    direction: rtl;
+    text-align: left;
     width: calc(100% - 200px);
 }
 
