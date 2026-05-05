@@ -2,7 +2,7 @@
     "name": "tele-mirror",
     "description": "A simple desktop client for viewing Telegram channels, specifically designed for complex filtering environments like Iran",
     "author": "ircfspace <ircfspace@gmail.com> (https://ircf.space/)",
-    "version": "1.3.3",
+    "version": "2.0.1",
     "main": "main.js",
     "scripts": {
         "dev": "npm start",
@@ -54,12 +54,17 @@
         "win": {
             "target": "zip",
             "icon": "assets/teleMirror.png",
-            "artifactName": "tele-mirror-${arch}-win.zip"
+            "artifactName": "tele-mirror-win-${arch}.zip"
         },
         "linux": {
             "target": "tar.gz",
             "icon": "assets/teleMirror.png",
-            "artifactName": "tele-mirror-${arch}-linux.tar.gz"
+            "artifactName": "tele-mirror-linux-${arch}.tar.gz"
+        },
+        "mac": {
+            "target": ["zip", "dmg"],
+            "icon": "assets/teleMirror.png",
+            "artifactName": "tele-mirror-mac-${arch}.${ext}"
         },
         "compression": "maximum",
         "asar": true

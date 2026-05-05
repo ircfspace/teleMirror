@@ -18,11 +18,11 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 
 Pre-built binaries are available for the following platforms and architectures:
 
-| Platform | Architectures |
-|----------|---------------|
+| Platform | Architectures    |
+| -------- | ---------------- |
 | Windows  | x64, ia32, arm64 |
-| Linux    | x64, arm64 |
-| macOS    | x64, arm64 |
+| Linux    | x64, arm64       |
+| macOS    | x64, arm64       |
 
 You can download the latest release from the [GitHub Releases](https://github.com/ircfspace/teleMirror/releases) page.
 

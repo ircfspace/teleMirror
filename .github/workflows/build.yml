@@ -34,7 +34,7 @@ jobs:
               run: |
                   npx electron-builder --win --${{ matrix.arch }} --publish never
                   # Create proper ZIP structure with subfolder
-                  powershell -Command "New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'tele-mirror-${{ matrix.arch }}-win.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force"
+                  powershell -Command "New-Item -Path 'tele-mirror' -ItemType Directory -Force; Copy-Item -Path 'dist/win-unpacked/*' -Destination 'tele-mirror/' -Recurse; Compress-Archive -Path 'tele-mirror/*' -DestinationPath 'tele-mirror-win-${{ matrix.arch }}.zip' -Force; Remove-Item -Path 'tele-mirror' -Recurse -Force"
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -44,7 +44,7 @@ jobs:
                   name: tele-mirror-win-${{ matrix.arch }}
                   path: |
                       dist/
-                      tele-mirror-${{ matrix.arch }}-win.zip
+                      tele-mirror-win-${{ matrix.arch }}.zip
 
     build-linux:
         runs-on: ubuntu-latest
