@@ -244,23 +244,22 @@ class ChannelManager {
         }
     }
 
-    // Get channel avatar image (local image first, then fallback)
+    // Get channel avatar image (Telegram photo first, then local, then text fallback)
     getChannelAvatar(channel) {
         const avatarText =
             channel.name && channel.name.length > 0 ? channel.name.charAt(0).toUpperCase() : '?';
 
-        // Check if local image exists for this channel
         const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
 
         if (channel.photo) {
-            // Use Telegram photo if available
-            return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-          onerror="console.error('Avatar load error:', this.src); this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+            // Try Telegram photo first, fallback to local image, then text
+            return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+          onerror="this.onerror = function() { this.style.display='none'; this.parentElement.innerHTML='${avatarText}'; }; this.src='${localImagePath}';"
           onload="console.log('Avatar loaded successfully');" />`;
         } else {
-            // Try local image first, fallback to text
-            return `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-          onerror="console.error('Local avatar load error:', this.src); this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+            // Try local image, fallback to text
+            return `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+          onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
           onload="console.log('Local avatar loaded successfully for ${channel.username}');" />`;
         }
     }
@@ -349,23 +348,22 @@ class ChannelManager {
         });
     }
 
-    // Get header channel avatar (local image first, then fallback)
+    // Get header channel avatar (Telegram photo first, then local, then text fallback)
     getHeaderChannelAvatar(channel) {
         const avatarText =
             channel.name && channel.name.length > 0 ? channel.name.charAt(0).toUpperCase() : '?';
 
-        // Check if local image exists for this channel
         const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
 
         if (channel.photo) {
-            // Use Telegram photo if available
-            return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-          onerror="console.error('Header avatar load error for ${channel.username}:', this.src); this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+            // Try Telegram photo first, fallback to local image, then text
+            return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+          onerror="this.onerror = function() { this.style.display='none'; this.parentElement.innerHTML='${avatarText}'; }; this.src='${localImagePath}';"
           onload="console.log('Header avatar loaded successfully for ${channel.username}');" />`;
         } else {
-            // Try local image first, fallback to text
-            return `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-          onerror="console.error('Local header avatar load error for ${channel.username}:', this.src); this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+            // Try local image, fallback to text
+            return `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+          onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
           onload="console.log('Local header avatar loaded successfully for ${channel.username}');" />`;
         }
     }
@@ -529,16 +527,22 @@ class ChannelManager {
                 const messageEl = document.createElement('div');
                 messageEl.className = 'message';
 
-                // Get channel photo for avatar
+                // Get channel photo for avatar (Telegram photo -> local -> text)
                 const channel = this.channels.find((c) => c.username === this.activeChannel);
-                const avatarHtml =
-                    channel && channel.photo
-                        ? `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-                onerror="console.error('Post avatar load error:', this.src); this.style.display='none'; this.parentElement.innerHTML='${post.author ? post.author.charAt(0).toUpperCase() : '?'}';"
-                onload="console.log('Post avatar loaded successfully');" />`
-                        : post.author
-                          ? post.author.charAt(0).toUpperCase()
-                          : '?';
+                const avatarText = post.author ? post.author.charAt(0).toUpperCase() : '?';
+                let avatarHtml = avatarText;
+                if (channel) {
+                    const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
+                    if (channel.photo) {
+                        avatarHtml = `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+                  onerror="this.onerror = function() { this.style.display='none'; this.parentElement.innerHTML='${avatarText}'; }; this.src='${localImagePath}';"
+                  onload="console.log('Post avatar loaded successfully');" />`;
+                    } else {
+                        avatarHtml = `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+                  onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+                  onload="console.log('Local post avatar loaded successfully');" />`;
+                    }
+                }
 
                 const timeText = PersianCalendar.formatDate(post.time) || '';
 
@@ -794,16 +798,7 @@ class ChannelManager {
             const isPinned = channel.username === 'ircfspace';
             channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
 
-            const avatarText = channel.name.charAt(0).toUpperCase();
-            console.log(`Rendering avatar for ${channel.username}:`, {
-                hasPhoto: !!channel.photo,
-                photoUrl: channel.photo ? channel.photo.substring(0, 50) + '...' : 'none'
-            });
-            const avatarHtml = channel.photo
-                ? `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
-          onerror="console.error('Avatar load error:', this.src); this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
-          onload="console.log('Avatar loaded successfully');" />`
-                : avatarText;
+            const avatarHtml = this.getChannelAvatar(channel);
 
             channelEl.innerHTML = `
           <div class="channel-avatar">${avatarHtml}</div>
