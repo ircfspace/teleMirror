@@ -16,7 +16,8 @@ class ChannelManager {
                     pinned: true
                 },
                 { username: 'vahidonline', name: 'وحید آنلاین', loading: false },
-                { username: 'persianvpnhub', name: 'فیلترشکن رایگان', loading: false }
+                { username: 'persianvpnhub', name: 'فیلترشکن رایگان', loading: false },
+                { username: 'iranintltv', name: 'ایران اینترنشنال', loading: false }
             ];
             this.saveChannels();
             // Set first channel as active
