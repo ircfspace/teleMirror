@@ -112,7 +112,6 @@ class AdService {
         return messageEl;
     }
 
-    
     closeAd(adId) {
         const adElement = document.querySelector(`[data-ad-id="${adId}"]`);
         if (adElement) {

@@ -2,7 +2,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const REMOTE_URL = 'https://raw.githubusercontent.com/ircfspace/teleMirror/refs/heads/main/config/ads.config.json';
+const REMOTE_URL =
+    'https://raw.githubusercontent.com/ircfspace/teleMirror/refs/heads/main/config/ads.config.json';
 const LOCAL_PATH = path.join(__dirname, 'ads.config.json');
 const FETCH_TIMEOUT = 5000;
 const CACHE_TTL_MS = 5 * 60 * 1000;
