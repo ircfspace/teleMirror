@@ -10,7 +10,7 @@ permissions:
     contents: write
 
 jobs:
-    build:
+    build-win:
         runs-on: windows-latest
 
         strategy:
@@ -41,13 +41,77 @@ jobs:
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
               with:
-                  name: tele-mirror-${{ matrix.arch }}
+                  name: tele-mirror-win-${{ matrix.arch }}
                   path: |
                       dist/
                       tele-mirror-${{ matrix.arch }}-win.zip
 
+    build-linux:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                arch: [x64, arm64]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build Electron app
+              run: |
+                  npx electron-builder --linux --${{ matrix.arch }} --publish never --config.compression=maximum
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: tele-mirror-linux-${{ matrix.arch }}
+                  path: dist/tele-mirror-*.tar.gz
+
+    build-mac:
+        runs-on: macos-latest
+
+        strategy:
+            matrix:
+                arch: [x64, arm64]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build Electron app
+              run: |
+                  npx electron-builder --mac --${{ matrix.arch }} --publish never
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: tele-mirror-mac-${{ matrix.arch }}
+                  path: dist/
+
     release:
-        needs: build
+        needs: [build-win, build-linux, build-mac]
         runs-on: ubuntu-latest
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
 
@@ -63,5 +127,7 @@ jobs:
                   draft: true
                   files: |
                       artifacts/**/*.zip
+                      artifacts/**/*.tar.gz
+                      artifacts/**/*.dmg
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
