@@ -14,7 +14,7 @@ class ProgressManager {
             percent.textContent = '0%';
         }
         if (message) {
-            message.textContent = 'Initializing...';
+            message.textContent = I18n.t('initializing');
         }
         if (container) {
             container.style.display = 'block';
@@ -35,7 +35,7 @@ class ProgressManager {
             percent.textContent = '0%';
         }
         if (message) {
-            message.textContent = 'Initializing...';
+            message.textContent = I18n.t('initializing');
         }
         if (container) {
             container.style.display = 'none';

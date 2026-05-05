@@ -7,16 +7,20 @@ function generateRequestId() {
 contextBridge.exposeInMainWorld('api', {
     generateRequestId,
     fetchUrl: async (url, requestId) => {
+        const lang = localStorage.getItem('appLanguage') || 'en';
         const res = await fetch('http://localhost:9876/fetch', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, requestId })
+            body: JSON.stringify({ url, requestId, lang })
         });
 
         return res.json();
     },
     connectProgress: (requestId, onProgress) => {
-        const eventSource = new EventSource(`http://localhost:9876/progress/${requestId}`);
+        const lang = localStorage.getItem('appLanguage') || 'en';
+        const eventSource = new EventSource(
+            `http://localhost:9876/progress/${requestId}?lang=${lang}`
+        );
 
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);

@@ -11,3 +11,4 @@ document.getElementById('closeButton').addEventListener('click', () => {
 const channelManager = new ChannelManager();
 channelManager.init();
 ThemeManager.init();
+LanguageManager.init();

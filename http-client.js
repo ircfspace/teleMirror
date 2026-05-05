@@ -4,10 +4,12 @@ const dnsPromises = require('dns').promises;
 const https = require('https');
 const http = require('http');
 const { EventEmitter } = require('events');
+const { ServerI18n } = require('./server/i18n');
 
 class HttpClient extends EventEmitter {
-    constructor() {
+    constructor(lang = 'en') {
         super();
+        this.lang = lang;
         this.userAgents = [
             // Chrome on Windows - more versions
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
@@ -188,47 +190,43 @@ class HttpClient extends EventEmitter {
             const timeSinceLastRequest = now - this.lastRequestTime;
             if (timeSinceLastRequest < this.minRequestInterval) {
                 const waitTime = this.minRequestInterval - timeSinceLastRequest;
-                this.emitProgress(
-                    1,
-                    `در حال انتظار برای جلوگیری از ریت لیمیت (${waitTime}ms)...`,
-                    5
-                );
+                this.emitProgress(1, ServerI18n.t('waitingRateLimit', this.lang, waitTime), 5);
                 await new Promise((resolve) => setTimeout(resolve, waitTime));
             }
             this.lastRequestTime = Date.now();
 
-            this.emitProgress(2, 'در حال اعتبارسنجی ورودی...', 10);
+            this.emitProgress(2, ServerI18n.t('validatingInput', this.lang), 10);
 
             // Validate input
             if (!input || typeof input !== 'string') {
-                this.emitProgress(0, 'Error: Invalid input parameter', 0);
+                this.emitProgress(0, ServerI18n.t('invalidInput', this.lang), 0);
                 return {
                     success: false,
-                    error: 'Invalid input parameter',
+                    error: ServerI18n.t('invalidInput', this.lang),
                     code: 'INVALID_INPUT'
                 };
             }
 
             // Format Telegram URL from username or existing URL
-            this.emitProgress(3, 'در حال ساخت آدرس کانال تلگرام...', 20);
+            this.emitProgress(3, ServerI18n.t('buildingTelegramUrl', this.lang), 20);
             const originalUrl = this.formatTelegramUrl(input);
             console.log('Formatted URL:', originalUrl);
 
             // Add delay to avoid rate limiting
             if (retryCount > 0) {
                 const delay = baseDelay * Math.pow(2, retryCount - 1); // Exponential backoff
-                this.emitProgress(4, `در حال انتظار برای جلوگیری از ریت لیمیت (${delay}ms)...`, 30);
+                this.emitProgress(4, ServerI18n.t('waitingRateLimitRetry', this.lang, delay), 30);
                 await new Promise((resolve) => setTimeout(resolve, delay));
             }
 
             // Check internet connection first
-            this.emitProgress(5, 'در حال بررسی اتصال به اینترنت...', 30);
+            this.emitProgress(5, ServerI18n.t('checkingInternet', this.lang), 30);
             const isConnected = await this.checkInternetConnection();
             if (!isConnected) {
-                this.emitProgress(0, 'Error: No internet connection', 0);
+                this.emitProgress(0, ServerI18n.t('noInternetConnection', this.lang), 0);
                 return {
                     success: false,
-                    error: 'No internet connection',
+                    error: ServerI18n.t('noInternetConnection', this.lang),
                     code: 'NO_INTERNET'
                 };
             }
@@ -238,7 +236,7 @@ class HttpClient extends EventEmitter {
 
             if (originalUrl.includes('t.me')) {
                 // Extract domain and path from original URL with error handling
-                this.emitProgress(6, 'در حال تجزیه آدرس URL...', 40);
+                this.emitProgress(6, ServerI18n.t('parsingUrl', this.lang), 40);
                 let path;
                 try {
                     const urlObj = new URL(originalUrl);
@@ -258,10 +256,10 @@ class HttpClient extends EventEmitter {
                     }
                 } catch (error) {
                     console.error('URL parsing error:', error.message);
-                    this.emitProgress(0, 'Error: Invalid URL format', 0);
+                    this.emitProgress(0, ServerI18n.t('invalidUrlFormat', this.lang), 0);
                     return {
                         success: false,
-                        error: 'Invalid URL format',
+                        error: ServerI18n.t('invalidUrlFormat', this.lang),
                         code: 'INVALID_URL'
                     };
                 }
@@ -272,7 +270,7 @@ class HttpClient extends EventEmitter {
 
                 if (proxyMethod === 'google') {
                     // Convert to Google Translate proxy - exactly like PHP
-                    this.emitProgress(5, 'در حال آماده‌سازی پروکسی گوگل ترنسلیت...', 50);
+                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate', this.lang), 50);
 
                     // Fix URL construction for Google Translate proxy
                     const urlObj = new URL(originalUrl);
@@ -286,7 +284,7 @@ class HttpClient extends EventEmitter {
                     console.log('Proxy URL constructed:', url);
                 } else if (proxyMethod === 'google2') {
                     // Alternative Google Translate endpoint
-                    this.emitProgress(5, 'در حال آماده‌سازی پروکسی گوگل ترنسلیت (2)...', 50);
+                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate2', this.lang), 50);
                     const urlObj = new URL(originalUrl);
                     const pathname = urlObj.pathname || '';
                     const search = urlObj.search || '';
@@ -296,7 +294,7 @@ class HttpClient extends EventEmitter {
                     url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=fa&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
                 } else if (proxyMethod === 'google3') {
                     // Another Google Translate endpoint with different parameters
-                    this.emitProgress(5, 'در حال آماده‌سازی پروکسی گوگل ترنسلیت (3)...', 50);
+                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate3', this.lang), 50);
                     const urlObj = new URL(originalUrl);
                     const pathname = urlObj.pathname || '';
                     const search = urlObj.search || '';
@@ -306,7 +304,7 @@ class HttpClient extends EventEmitter {
                     url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
                 } else if (proxyMethod === 'google4') {
                     // Fourth Google Translate endpoint with new IP
-                    this.emitProgress(5, 'در حال آماده‌سازی پروکسی گوگل ترنسلیت (4)...', 50);
+                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate4', this.lang), 50);
                     const urlObj = new URL(originalUrl);
                     const pathname = urlObj.pathname || '';
                     const search = urlObj.search || '';
@@ -316,13 +314,13 @@ class HttpClient extends EventEmitter {
                     url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=ar&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
                 } else {
                     // Direct connection
-                    this.emitProgress(5, 'در حال تلاش با متد مستقیم...', 50);
+                    this.emitProgress(5, ServerI18n.t('tryingDirectMethod', this.lang), 50);
                     url = originalUrl;
                 }
 
                 // Create axios config
-                this.emitProgress(7, 'در حال آماده‌سازی درخواست HTTP...', 60);
-                this.emitProgress(8, 'در حال پیکربندی درخواست HTTP...', 70);
+                this.emitProgress(7, ServerI18n.t('preparingHttpRequest', this.lang), 60);
+                this.emitProgress(8, ServerI18n.t('configuringHttpRequest', this.lang), 70);
 
                 const baseHeaders = {
                     'User-Agent': this.getRandomUserAgent(),
@@ -410,12 +408,12 @@ class HttpClient extends EventEmitter {
                     };
                 }
 
-                this.emitProgress(9, 'در حال ارسال درخواست از طریق پروکسی...', 80);
+                this.emitProgress(9, ServerI18n.t('sendingRequestViaProxy', this.lang), 80);
                 const startTime = Date.now();
                 const response = await axios(config);
                 const endTime = Date.now();
 
-                this.emitProgress(10, 'در حال پردازش پاسخ...', 90);
+                this.emitProgress(10, ServerI18n.t('processingResponse', this.lang), 90);
 
                 console.log(`Request response:`, {
                     status: response.status,
@@ -433,7 +431,7 @@ class HttpClient extends EventEmitter {
                     if (retryCount < 2) {
                         this.emitProgress(
                             0,
-                            `خطای timeout. در حال تلاش مجدد (${retryCount + 1}/2)...`,
+                            ServerI18n.t('timeoutRetrying', this.lang, retryCount + 1),
                             0
                         );
                         return await this.curlSetopts(input, customHeaders, retryCount + 1);
@@ -445,27 +443,28 @@ class HttpClient extends EventEmitter {
                     if (retryCount < maxRetries) {
                         this.emitProgress(
                             0,
-                            `ریت لیمیت دریافت شد. در حال تلاش مجدد (${retryCount + 1}/${maxRetries})...`,
+                            ServerI18n.t(
+                                'rateLimitRetrying',
+                                this.lang,
+                                retryCount + 1,
+                                maxRetries
+                            ),
                             0
                         );
                         // Retry with exponential backoff
                         return await this.curlSetopts(input, customHeaders, retryCount + 1);
                     } else {
-                        this.emitProgress(
-                            0,
-                            'خطا: تعداد تلاش‌های مجدد تمام شد. لطفاً چند دقیقه دیگر دوباره تلاش کنید.',
-                            0
-                        );
+                        this.emitProgress(0, ServerI18n.t('retriesExhausted', this.lang), 0);
                         return {
                             success: false,
-                            error: 'تعداد تلاش‌های مجدد تمام شد. لطفاً چند دقیقه دیگر دوباره تلاش کنید.',
+                            error: ServerI18n.t('allRetriesExhausted', this.lang),
                             code: 'RATE_LIMIT_EXHAUSTED',
                             status: response.status
                         };
                     }
                 }
 
-                this.emitProgress(11, 'عملیات با موفقیت انجام شد!', 100);
+                this.emitProgress(11, ServerI18n.t('operationCompleted', this.lang), 100);
 
                 return {
                     success: true,
@@ -478,7 +477,7 @@ class HttpClient extends EventEmitter {
             }
         } catch (error) {
             // Emit error progress
-            this.emitProgress(0, `Error: ${error.message}`, 0);
+            this.emitProgress(0, ServerI18n.t('error', this.lang, error.message), 0);
 
             const errorResponse = {
                 success: false,
@@ -487,13 +486,13 @@ class HttpClient extends EventEmitter {
             };
 
             if (error.code === 'ECONNABORTED') {
-                errorResponse.error = 'timeout of 10000ms exceeded';
+                errorResponse.error = ServerI18n.t('timeoutExceeded', this.lang);
                 errorResponse.code = 'TIMEOUT';
             } else if (error.code === 'ENOTFOUND') {
-                errorResponse.error = 'DNS resolution failed';
+                errorResponse.error = ServerI18n.t('dnsResolutionFailed', this.lang);
                 errorResponse.code = 'DNS_ERROR';
             } else if (error.code === 'ECONNRESET') {
-                errorResponse.error = 'Connection reset by peer';
+                errorResponse.error = ServerI18n.t('connectionReset', this.lang);
                 errorResponse.code = 'CONNECTION_RESET';
             }
 
@@ -511,14 +510,14 @@ class HttpClient extends EventEmitter {
             if (!isConnected) {
                 return {
                     success: false,
-                    error: 'No internet connection',
+                    error: ServerI18n.t('noInternetConnection', this.lang),
                     code: 'NO_INTERNET'
                 };
             }
 
             const axiosInstance = await this.simulateGoogleDNS(url);
             if (!axiosInstance) {
-                throw new Error('Failed to setup DNS simulation');
+                throw new Error(ServerI18n.t('dnsResolutionFailed', this.lang));
             }
 
             const headers = {

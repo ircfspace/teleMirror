@@ -30,6 +30,7 @@
                             type="text"
                             class="fetch-input"
                             id="fetchInput"
+                            data-i18n="enterChannelUsername"
                             placeholder="Enter channel username"
                         />
                         <button class="add-channel-button" id="addChannelButton">+</button>
@@ -46,8 +47,14 @@
                     <div class="message-header-info">
                         <div class="header-channel-avatar" id="headerChannelAvatar">?</div>
                         <div>
-                            <div class="channel-title" id="channelTitle">Select a channel</div>
-                            <div class="channel-subtitle" id="channelSubtitle">
+                            <div class="channel-title" id="channelTitle" data-i18n="selectChannel">
+                                Select a channel
+                            </div>
+                            <div
+                                class="channel-subtitle"
+                                id="channelSubtitle"
+                                data-i18n="chooseFromList"
+                            >
                                 Choose from the list
                             </div>
                         </div>
@@ -57,6 +64,7 @@
                             class="header-view-button"
                             id="headerViewButton"
                             style="display: none"
+                            data-i18n="viewChannel"
                             title="View Channel"
                         >
                             🔗
@@ -65,6 +73,7 @@
                             class="header-leave-button"
                             id="headerLeaveButton"
                             style="display: none"
+                            data-i18n="deleteChannel"
                             title="Delete Channel"
                         >
                             🗑
@@ -74,8 +83,10 @@
                 <div class="message-container" id="messageContainer">
                     <div class="empty-state">
                         <div class="empty-state-icon">📱</div>
-                        <div class="empty-state-text">Select a channel to view messages</div>
-                        <div class="empty-state-subtext">
+                        <div class="empty-state-text" data-i18n="emptyStateTitle">
+                            Select a channel to view messages
+                        </div>
+                        <div class="empty-state-subtext" data-i18n="emptyStateSubtext">
                             Choose from the channel list or add a new one
                         </div>
                     </div>
@@ -90,27 +101,41 @@
             </div>
             <div class="progress-info">
                 <span class="progress-percent" id="progressPercent">0%</span>
-                <div class="progress-message" id="progressMessage">Initializing...</div>
+                <div class="progress-message" id="progressMessage" data-i18n="initializing">
+                    Initializing...
+                </div>
             </div>
         </div>
 
         <!-- Bottom Menu Bar -->
         <div class="bottom-menu">
-            <button class="menu-btn" id="themeSwitchBottom" title="تغییر تم">
+            <button
+                class="menu-btn"
+                id="themeSwitchBottom"
+                data-i18n="changeTheme"
+                title="Change Theme"
+            >
                 <span class="menu-icon">🌙</span>
             </button>
-            <button class="menu-btn" id="donateBtnBottom" title="حمایت مالی">
+            <button class="menu-btn" id="langSwitchBottom" title="Language">
+                <span class="menu-icon">🌐</span>
+            </button>
+            <button class="menu-btn" id="donateBtnBottom" data-i18n="donate" title="Donate">
                 <span class="menu-icon">☕</span>
             </button>
         </div>
 
         <!-- Load JavaScript modules -->
         <script src="js/config-loader.js"></script>
+        <script src="js/locales/en.js"></script>
+        <script src="js/locales/fa.js"></script>
+        <script src="js/i18n.js"></script>
         <script src="js/app.js"></script>
         <script src="js/ad-service.js"></script>
         <script src="js/channel-manager.js"></script>
         <script src="js/progress-manager.js"></script>
         <script src="js/theme-manager.js"></script>
+        <script src="js/language-manager.js"></script>
         <script src="js/init.js"></script>
     </body>
 </html>

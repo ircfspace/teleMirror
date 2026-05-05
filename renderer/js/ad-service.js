@@ -103,7 +103,7 @@ class AdService {
                 <div class="message-bubble">
                     ${ad.caption ? `<div class="message-text" dir="auto">${ad.caption}</div>` : ''}
                     <div class="message-views" style="color: #f39c12; font-size: 12px;">
-                        📢 تبلیغات
+                        📢 ${I18n.t('adLabel')}
                     </div>
                 </div>
             </div>

@@ -1,11 +1,10 @@
 const express = require('express');
 const FlowManager = require('./flow-manager');
+const { ServerI18n } = require('./i18n');
 
 function createServer(port = 9876) {
     const app = express();
     app.use(express.json());
-
-    const flowManager = new FlowManager();
 
     // Store active requests with their progress clients
     const activeRequests = new Map();
@@ -13,6 +12,7 @@ function createServer(port = 9876) {
     // SSE endpoint for progress
     app.get('/progress/:requestId', (req, res) => {
         const requestId = req.params.requestId;
+        const lang = req.query.lang || 'en';
 
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
@@ -20,14 +20,17 @@ function createServer(port = 9876) {
 
         // Store the response object to send events
         if (!activeRequests.has(requestId)) {
-            activeRequests.set(requestId, { progressListeners: [] });
+            activeRequests.set(requestId, { progressListeners: [], lang });
+        } else {
+            const requestData = activeRequests.get(requestId);
+            requestData.lang = lang;
         }
         const requestData = activeRequests.get(requestId);
         requestData.progressListeners.push(res);
 
         // Send initial connection message
         res.write(
-            `data: ${JSON.stringify({ stage: 0, message: 'اتصال برقرار شد، آماده دریافت درخواست...', percent: 0 })}\n\n`
+            `data: ${JSON.stringify({ stage: 0, message: ServerI18n.t('connectionEstablished', lang), percent: 0 })}\n\n`
         );
 
         // Clean up on close
@@ -43,7 +46,14 @@ function createServer(port = 9876) {
     });
 
     app.post('/fetch', async (req, res) => {
-        const { url, requestId } = req.body;
+        const { url, requestId, lang } = req.body;
+        const requestLang =
+            requestId && activeRequests.has(requestId)
+                ? activeRequests.get(requestId).lang
+                : lang || 'en';
+
+        // Create a new FlowManager per request with language context
+        const flowManager = new FlowManager(requestLang);
 
         // Set up progress listener if requestId provided
         if (requestId && activeRequests.has(requestId)) {
@@ -74,7 +84,7 @@ function createServer(port = 9876) {
                 console.error('Flow execution error:', error);
                 res.json({
                     success: false,
-                    error: 'خطا در اجرای فرآیند: ' + error.message,
+                    error: ServerI18n.t('flowExecutionError', requestLang, error.message),
                     code: 'FLOW_EXECUTION_ERROR'
                 });
             } finally {
@@ -90,7 +100,7 @@ function createServer(port = 9876) {
                 console.error('Flow execution error (no progress):', error);
                 res.json({
                     success: false,
-                    error: 'خطا در اجرای فرآیند: ' + error.message,
+                    error: ServerI18n.t('flowExecutionError', requestLang, error.message),
                     code: 'FLOW_EXECUTION_ERROR'
                 });
             }

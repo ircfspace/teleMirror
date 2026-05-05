@@ -378,7 +378,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
 }
 
 .channel-list-header {
-    padding: 12px;
+    padding: 11px;
     background: #2b5278;
     border-bottom: 1px solid #1e3947;
 }
@@ -395,7 +395,7 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     color: #ffffff;
     padding: 10px 40px 10px 15px;
     border-radius: 25px;
-    font-size: 14px;
+    font: 14px 'Shabnam';
     -webkit-app-region: no-drag;
 }
 
@@ -949,9 +949,13 @@ body.light-theme .menu-btn:active {
     color: #e4e4e4;
     font-size: 12px;
     float: left;
-    direction: rtl;
+    direction: ltr;
     text-align: left;
     width: calc(100% - 200px);
+}
+body.lang-fa .progress-message {
+    direction: rtl;
+    text-align: left;
 }
 
 /* Empty State */
@@ -1097,7 +1101,23 @@ body.light-theme .menu-btn:active {
     font-weight: 500;
 }
 
-/* Dark theme support for ads */
+/* RTL text direction for Persian language - only text, not layout */
+body.lang-fa .channel-name,
+body.lang-fa .channel-username,
+body.lang-fa .channel-title,
+body.lang-fa .channel-subtitle,
+body.lang-fa .empty-state-text,
+body.lang-fa .empty-state-subtext,
+body.lang-fa .message-author,
+body.lang-fa .fetch-input,
+body.lang-fa .message-views,
+body.lang-fa .ad-label,
+body.lang-fa .message-time {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Light theme support for ads */
 body.dark-theme .ad-message {
     background: linear-gradient(135deg, rgba(255, 193, 7, 0.08) 0%, rgba(255, 152, 0, 0.03) 100%);
 }

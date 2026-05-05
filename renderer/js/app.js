@@ -65,17 +65,41 @@ class PersianCalendar {
                 return dateString;
             }
 
+            const today = new Date();
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth() + 1;
+            const todayDay = today.getDate();
+
+            // Use English/Gregorian format when language is English
+            if (typeof I18n !== 'undefined' && I18n.getLanguage() === 'en') {
+                const isToday =
+                    date.getFullYear() === today.getFullYear() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getDate() === today.getDate();
+                const isYesterday =
+                    date.getFullYear() === today.getFullYear() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getDate() === today.getDate() - 1;
+
+                if (isToday) {
+                    return I18n.t('today');
+                } else if (isYesterday) {
+                    return I18n.t('yesterday');
+                } else {
+                    return date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+                    });
+                }
+            }
+
             console.log(
                 'Converting to Persian date:',
                 date.getFullYear(),
                 date.getMonth() + 1,
                 date.getDate()
             );
-
-            const today = new Date();
-            const todayYear = today.getFullYear();
-            const todayMonth = today.getMonth() + 1;
-            const todayDay = today.getDate();
 
             // Convert to Persian calendar
             const [persianYear, persianMonth, persianDay] = this.gregorianToPersian(
@@ -90,18 +114,18 @@ class PersianCalendar {
             );
 
             const persianMonths = [
-                'فروردین',
-                'اردیبهشت',
-                'خرداد',
-                'تیر',
-                'مرداد',
-                'شهریور',
-                'مهر',
-                'آبان',
-                'آذر',
-                'دی',
-                'بهمن',
-                'اسفند'
+                I18n.t('january'),
+                I18n.t('february'),
+                I18n.t('march'),
+                I18n.t('april'),
+                I18n.t('may'),
+                I18n.t('june'),
+                I18n.t('july'),
+                I18n.t('august'),
+                I18n.t('september'),
+                I18n.t('october'),
+                I18n.t('november'),
+                I18n.t('december')
             ];
 
             // Format based on recency using Persian dates
@@ -110,13 +134,13 @@ class PersianCalendar {
                 persianMonth === todayPersianMonth &&
                 persianDay === todayPersianDay
             ) {
-                return 'امروز';
+                return I18n.t('today');
             } else if (
                 persianYear === todayPersianYear &&
                 persianMonth === todayPersianMonth &&
                 persianDay === todayPersianDay - 1
             ) {
-                return 'دیروز';
+                return I18n.t('yesterday');
             } else if (persianYear === todayPersianYear && persianMonth === todayPersianMonth) {
                 return `${persianDay} ${persianMonths[persianMonth - 1]}`;
             } else if (persianYear === todayPersianYear) {

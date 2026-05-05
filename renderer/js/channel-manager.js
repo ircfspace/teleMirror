@@ -36,6 +36,17 @@ class ChannelManager {
         this.renderChannels();
         this.setupEventListeners();
         this.setupLeaveButton();
+        this.setupLanguageListener();
+    }
+
+    setupLanguageListener() {
+        document.addEventListener('languageChanged', () => {
+            this.renderChannels();
+            this.updateMessageHeader();
+            if (!this.activeChannel) {
+                this.showEmptyState();
+            }
+        });
     }
 
     loadChannels() {
@@ -164,7 +175,7 @@ class ChannelManager {
         }
 
         if (this.channels.find((c) => c.username === username)) {
-            alert('Channel already exists in the list');
+            alert(I18n.t('channelAlreadyExists'));
             return;
         }
 
@@ -218,7 +229,7 @@ class ChannelManager {
         // Prevent removal of pinned channels
         const channel = this.channels.find((c) => c.username === username);
         if (channel && channel.pinned) {
-            alert('کانال پین‌شده نمی‌تواند حذف شود');
+            alert(I18n.t('pinnedChannelCannotDelete'));
             return;
         }
 
@@ -337,11 +348,11 @@ class ChannelManager {
 
                 // Prevent deletion of pinned channels
                 if (channel && channel.pinned) {
-                    alert('کانال پین‌شده نمی‌تواند حذف شود');
+                    alert(I18n.t('pinnedChannelCannotDelete'));
                     return;
                 }
 
-                if (confirm(`Delete channel "${channelName}"?`)) {
+                if (confirm(I18n.t('deleteChannelConfirm', channelName))) {
                     this.removeChannel(this.activeChannel);
                 }
             }
@@ -393,8 +404,8 @@ class ChannelManager {
             }
         } else {
             avatar.textContent = '?';
-            title.textContent = 'Select a channel';
-            subtitle.textContent = 'Choose from the list';
+            title.textContent = I18n.t('selectChannel');
+            subtitle.textContent = I18n.t('chooseFromList');
             // Hide buttons when no channel selected
             if (leaveButton) leaveButton.style.display = 'none';
             if (viewButton) viewButton.style.display = 'none';
@@ -406,8 +417,8 @@ class ChannelManager {
         container.innerHTML = `
         <div class="empty-state">
             <div class="empty-state-icon">📱</div>
-            <div class="empty-state-text">Select a channel to view messages</div>
-            <div class="empty-state-subtext">Choose from the channel list or add a new one</div>
+            <div class="empty-state-text">${I18n.t('emptyStateTitle')}</div>
+            <div class="empty-state-subtext">${I18n.t('emptyStateSubtext')}</div>
         </div>
     `;
     }
@@ -423,8 +434,7 @@ class ChannelManager {
             return;
         }
 
-        container.innerHTML =
-            '<div style="text-align: center; padding: 20px; color: #8a9ba8;">در حال بارگذاری پیام‌ها...</div>';
+        container.innerHTML = `<div style="text-align: center; padding: 20px; color: #8a9ba8;">${I18n.t('loadingMessages')}</div>`;
 
         let disconnectProgress;
 
@@ -449,7 +459,7 @@ class ChannelManager {
                 // Ensure progress reaches 100% before hiding
                 ProgressManager.update({
                     stage: 10,
-                    message: 'عملیات با موفقیت انجام شد!',
+                    message: I18n.t('operationSuccess'),
                     percent: 100
                 });
 
@@ -464,7 +474,7 @@ class ChannelManager {
                 // Keep progress bar visible to show the error message
                 ProgressManager.update({
                     stage: 0,
-                    message: `خطا: ${response.error || 'خطای ناشناخته'}`,
+                    message: I18n.t('error', response.error || I18n.t('unknown')),
                     percent: 0
                 });
                 // Wait longer to show error message in progress bar
@@ -474,7 +484,7 @@ class ChannelManager {
 
                 container.innerHTML = `
                 <div style="text-align: center; padding: 20px; color: #e74c3c;">
-                    خطا در بارگذاری پیام‌ها: ${response.error || 'خطای ناشناخته'}
+                    ${I18n.t('errorLoadingMessages', response.error || I18n.t('unknown'))}
                 </div>
             `;
             }
@@ -482,7 +492,7 @@ class ChannelManager {
             // Show error in progress before hiding
             ProgressManager.update({
                 stage: 0,
-                message: `خطا: ${error.message}`,
+                message: I18n.t('error', error.message),
                 percent: 0
             });
             // Wait longer to show error message in progress bar
@@ -492,7 +502,7 @@ class ChannelManager {
 
             container.innerHTML = `
             <div style="text-align: center; padding: 20px; color: #e74c3c;">
-                خطا: ${error.message}
+                ${I18n.t('error', error.message)}
             </div>
         `;
         }
@@ -577,7 +587,7 @@ class ChannelManager {
                             .map(
                                 (video) =>
                                     `<div style="background: #1a1a1b; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px;">
-                    📹 Video (${video.duration || 'Unknown'})
+                    📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
                   </div>`
                             )
                             .join('');
@@ -588,14 +598,14 @@ class ChannelManager {
                 <div class="message-avatar">${avatarHtml}</div>
                 <div class="message-content">
                     <div class="message-header-info">
-                        <span class="message-author">${post.author || 'Unknown'}</span>
-                        <span class="message-time">${timeText}${post.edited ? ' • edited' : ''}</span>
+                        <span class="message-author">${post.author || I18n.t('unknown')}</span>
+                        <span class="message-time">${timeText}${post.edited ? ' • ' + I18n.t('edited') : ''}</span>
                     </div>
                     <div class="message-bubble ${isOwn ? 'own' : ''}">
                         ${post.text ? `<div class="message-text" dir="auto">${post.text}</div>` : ''}
                         ${mediaHtml ? `<div class="message-media">${mediaHtml}</div>` : ''}
                         <div class="message-views">
-                            👁 ${post.views || 0} views
+                            👁 ${post.views || 0} ${I18n.t('views')}
                         </div>
                     </div>
                 </div>
@@ -606,7 +616,7 @@ class ChannelManager {
         } else {
             container.innerHTML = `
             <div style="text-align: center; padding: 20px; color: #8a9ba8;">
-                No messages found
+                ${I18n.t('noMessagesFound')}
             </div>
         `;
         }
@@ -751,8 +761,8 @@ class ChannelManager {
             // Show message that channel doesn't exist
             container.innerHTML = `
           <div style="padding: 20px; text-align: center; color: #8a9ba8;">
-            <div style="margin-bottom: 10px;">کانال "@${searchTerm}" در لیست وجود ندارد</div>
-            <div style="font-size: 12px;">می‌توانید با کلیک روی + آن را اضافه کنید</div>
+            <div style="margin-bottom: 10px;">${I18n.t('channelNotInList', searchTerm)}</div>
+            <div style="font-size: 12px;">${I18n.t('clickPlusToAdd')}</div>
           </div>
         `;
         } else {

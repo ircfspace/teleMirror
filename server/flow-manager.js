@@ -1,9 +1,11 @@
 const HttpClient = require('../http-client');
 const axios = require('axios');
+const { ServerI18n } = require('./i18n');
 
 class FlowManager {
-    constructor() {
-        this.httpClient = new HttpClient();
+    constructor(lang = 'en') {
+        this.lang = lang;
+        this.httpClient = new HttpClient(lang);
         this.steps = {
             CHECK_CONNECTION: 'check_connection',
             ONLINE_TELEGRAM: 'online_telegram',
@@ -22,7 +24,11 @@ class FlowManager {
     async executeFlow(url, progressCallback) {
         try {
             // Step 1: Check internet connection
-            progressCallback?.(this.steps.CHECK_CONNECTION, 'در حال بررسی اتصال به اینترنت...', 10);
+            progressCallback?.(
+                this.steps.CHECK_CONNECTION,
+                ServerI18n.t('checkingInternet', this.lang),
+                10
+            );
             const isConnected = await this.httpClient.checkInternetConnection();
 
             if (!isConnected) {
@@ -34,7 +40,7 @@ class FlowManager {
             console.error('Flow execution error:', error);
             return {
                 success: false,
-                error: 'خطا در اجرای فرآیند: ' + error.message,
+                error: ServerI18n.t('flowExecutionError', this.lang, error.message),
                 code: 'FLOW_ERROR'
             };
         }
@@ -49,7 +55,7 @@ class FlowManager {
     async executeOfflineFlow(url, progressCallback) {
         progressCallback?.(
             this.steps.OFFLINE_GITHUB_DIRECT,
-            'آفلاین: در حال تلاش برای داده‌های کش شده...',
+            ServerI18n.t('offlineTryingCache', this.lang),
             30
         );
 
@@ -57,7 +63,7 @@ class FlowManager {
         if (!username) {
             return {
                 success: false,
-                error: 'به اینترنت دسترسی نداری و نام کاربری نامعتبر است. لطفاً اتصال اینترنت خود را بررسی کن.',
+                error: ServerI18n.t('noInternetInvalidUsername', this.lang),
                 code: 'NO_INTERNET_INVALID_USERNAME'
             };
         }
@@ -67,7 +73,7 @@ class FlowManager {
             if (githubData) {
                 progressCallback?.(
                     this.steps.OFFLINE_GITHUB_DIRECT,
-                    'داده‌های کش شده با موفقیت بارگذاری شد',
+                    ServerI18n.t('cachedDataLoaded', this.lang),
                     100
                 );
                 return {
@@ -87,10 +93,14 @@ class FlowManager {
         }
 
         // If cached version is also unavailable
-        progressCallback?.(this.steps.ERROR_NO_INTERNET, 'خطا: به اینترنت و کش دسترسی نداری', 0);
+        progressCallback?.(
+            this.steps.ERROR_NO_INTERNET,
+            ServerI18n.t('noInternetOrCache', this.lang),
+            0
+        );
         return {
             success: false,
-            error: 'به اینترنت دسترسی نداری. لطفاً اتصال اینترنت خود را بررسی کن.',
+            error: ServerI18n.t('noInternetCheckConnection', this.lang),
             code: 'NO_INTERNET_NO_CACHE',
             flow: 'offline_failed'
         };
@@ -103,7 +113,11 @@ class FlowManager {
      * @returns {Promise<Object>} - Result with data or error
      */
     async executeOnlineFlow(url, progressCallback) {
-        progressCallback?.(this.steps.ONLINE_TELEGRAM, 'آنلاین: در حال تلاش برای تلگرام...', 30);
+        progressCallback?.(
+            this.steps.ONLINE_TELEGRAM,
+            ServerI18n.t('onlineTryingTelegram', this.lang),
+            30
+        );
 
         // Step 2: Try Telegram directly
         try {
@@ -117,7 +131,7 @@ class FlowManager {
             ) {
                 progressCallback?.(
                     this.steps.ONLINE_TELEGRAM,
-                    'داده‌های تلگرام با موفقیت دریافت شد',
+                    ServerI18n.t('telegramDataReceived', this.lang),
                     100
                 );
                 return {
@@ -138,7 +152,7 @@ class FlowManager {
         // Step 3: GitHub fallback for online mode
         progressCallback?.(
             this.steps.ONLINE_GITHUB_FALLBACK,
-            'آنلاین: در حال تلاش برای کش به عنوان فال‌بک...',
+            ServerI18n.t('onlineTryingCacheFallback', this.lang),
             60
         );
         return await this.executeGitHubFallback(url, progressCallback, 'online_fallback');
@@ -156,7 +170,7 @@ class FlowManager {
         if (!username) {
             return {
                 success: false,
-                error: 'نام کاربری نامعتبر است',
+                error: ServerI18n.t('invalidUsername', this.lang),
                 code: 'INVALID_USERNAME'
             };
         }
@@ -166,7 +180,7 @@ class FlowManager {
             if (githubData) {
                 progressCallback?.(
                     this.steps.ONLINE_GITHUB_FALLBACK,
-                    'داده‌های کش با موفقیت بارگذاری شد',
+                    ServerI18n.t('cacheLoadedSuccessfully', this.lang),
                     100
                 );
                 return {
@@ -187,7 +201,7 @@ class FlowManager {
 
         return {
             success: false,
-            error: 'دریافت داده از تلگرام و کش ممکن نیست',
+            error: ServerI18n.t('bothSourcesFailed', this.lang),
             code: 'BOTH_SOURCES_FAILED',
             flow: flowType + '_failed'
         };
