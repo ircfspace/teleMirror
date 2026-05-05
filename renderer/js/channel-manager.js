@@ -216,8 +216,9 @@ class ChannelManager {
 
     removeChannel(username) {
         // Prevent removal of pinned channels
-        if (username === 'ircfspace') {
-            alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
+        const channel = this.channels.find((c) => c.username === username);
+        if (channel && channel.pinned) {
+            alert('کانال پین‌شده نمی‌تواند حذف شود');
             return;
         }
 
@@ -293,7 +294,7 @@ class ChannelManager {
 
         sortedChannels.forEach((channel) => {
             const channelEl = document.createElement('div');
-            const isPinned = channel.username === 'ircfspace';
+            const isPinned = channel.pinned;
             channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
 
             const avatarHtml = this.getChannelAvatar(channel);
@@ -308,7 +309,6 @@ class ChannelManager {
 
             channelEl.addEventListener('click', () => {
                 this.setActiveChannel(channel.username);
-                this.loadChannelMessages(channel.username);
             });
 
             container.appendChild(channelEl);
@@ -336,8 +336,8 @@ class ChannelManager {
                 const channelName = channel ? channel.name : this.activeChannel;
 
                 // Prevent deletion of pinned channels
-                if (this.activeChannel === 'ircfspace') {
-                    alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
+                if (channel && channel.pinned) {
+                    alert('کانال پین‌شده نمی‌تواند حذف شود');
                     return;
                 }
 
@@ -387,7 +387,7 @@ class ChannelManager {
             subtitle.textContent = `@${channel.username}`;
             // Show buttons when channel is selected, but hide for pinned channels
             if (leaveButton && viewButton) {
-                const isPinned = channel.username === 'ircfspace' || channel.pinned;
+                const isPinned = channel.pinned;
                 leaveButton.style.display = isPinned ? 'none' : 'block';
                 viewButton.style.display = 'block'; // Always show view button
             }
@@ -419,7 +419,7 @@ class ChannelManager {
         const cachedData = this.getCachedData(username);
         if (cachedData) {
             console.log(`Using cached data for ${username}`);
-            this.renderMessages(cachedData);
+            this.renderMessages(cachedData, username);
             return;
         }
 
@@ -459,7 +459,7 @@ class ChannelManager {
                 ProgressManager.hide();
                 if (disconnectProgress) disconnectProgress();
 
-                this.renderMessages(response.data);
+                this.renderMessages(response.data, username);
             } else {
                 // Keep progress bar visible to show the error message
                 ProgressManager.update({
@@ -498,25 +498,40 @@ class ChannelManager {
         }
     }
 
-    renderMessages(data) {
+    renderMessages(data, username) {
         const container = document.getElementById('messageContainer');
-        container.innerHTML = '';
 
+        // Update channel metadata for the correct channel (regardless of active state)
         if (data.channel) {
-            // Update channel info if available
-            const channel = this.channels.find((c) => c.username === this.activeChannel);
-            if (channel && data.channel.title) {
-                channel.name = data.channel.title;
-                console.log('Channel data received:', {
-                    title: data.channel.title,
-                    photo: data.channel.photo,
-                    photoLength: data.channel.photo ? data.channel.photo.length : 0
-                });
+            const channel = this.channels.find((c) => c.username === username);
+            if (channel) {
+                if (data.channel.title) {
+                    channel.name = data.channel.title;
+                    console.log('Channel data received:', {
+                        title: data.channel.title,
+                        photo: data.channel.photo,
+                        photoLength: data.channel.photo ? data.channel.photo.length : 0
+                    });
+                }
                 if (data.channel.photo) {
                     channel.photo = data.channel.photo;
                     console.log('Channel photo saved:', channel.photo.substring(0, 100) + '...');
                 }
                 this.saveChannels();
+            }
+        }
+
+        // Only render to DOM if this is still the active channel
+        if (this.activeChannel !== username) {
+            return;
+        }
+
+        container.innerHTML = '';
+
+        // Update header and sidebar for the active channel
+        if (data.channel) {
+            const channel = this.channels.find((c) => c.username === username);
+            if (channel) {
                 this.updateMessageHeader();
                 this.updateSingleChannel(channel); // Update only the changed channel
             }
@@ -775,7 +790,7 @@ class ChannelManager {
                 // Update name
                 const nameEl = channelEl.querySelector('.channel-name');
                 if (nameEl) {
-                    const isPinned = updatedChannel.username === 'ircfspace';
+                    const isPinned = updatedChannel.pinned;
                     nameEl.textContent = `${updatedChannel.name}${isPinned ? ' 📌' : ''}`;
                 }
             }
@@ -788,14 +803,14 @@ class ChannelManager {
 
         // Sort filtered channels: pinned channels first
         const sortedChannels = channels.sort((a, b) => {
-            if (a.username === 'ircfspace') return -1;
-            if (b.username === 'ircfspace') return 1;
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
             return 0;
         });
 
         sortedChannels.forEach((channel) => {
             const channelEl = document.createElement('div');
-            const isPinned = channel.username === 'ircfspace';
+            const isPinned = channel.pinned;
             channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
 
             const avatarHtml = this.getChannelAvatar(channel);
@@ -810,7 +825,6 @@ class ChannelManager {
 
             channelEl.addEventListener('click', () => {
                 this.setActiveChannel(channel.username);
-                this.loadChannelMessages(channel.username);
             });
 
             container.appendChild(channelEl);
