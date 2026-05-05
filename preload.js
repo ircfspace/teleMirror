@@ -37,5 +37,8 @@ contextBridge.exposeInMainWorld('api', {
     },
     getAppConfig: () => {
         return ipcRenderer.invoke('get-app-config');
+    },
+    getAdsConfig: () => {
+        return ipcRenderer.invoke('get-ads-config');
     }
 });

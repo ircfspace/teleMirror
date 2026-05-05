@@ -9,8 +9,7 @@ class AdService {
 
     async loadConfig() {
         try {
-            const response = await fetch('../config/ads.config.json');
-            const data = await response.json();
+            const data = await window.api.getAdsConfig();
             this.config = data;
         } catch (error) {
             console.error('Failed to load ad configuration:', error);

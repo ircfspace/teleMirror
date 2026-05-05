@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const { createServer } = require('./server/server');
 const appConfig = require('./config/app.config');
+const adsConfigLoader = require('./config/ads-config-loader');
 
 const isDev = () => process.env.NODE_ENV === 'development';
 
@@ -90,6 +91,10 @@ if (!gotTheLock) {
 
     ipcMain.handle('get-app-config', () => {
         return appConfig.app;
+    });
+
+    ipcMain.handle('get-ads-config', async () => {
+        return await adsConfigLoader.loadAdsConfig();
     });
 
     // Cleanup function to close server
