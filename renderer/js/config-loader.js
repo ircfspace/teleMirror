@@ -6,10 +6,10 @@ async function loadAppConfig() {
     try {
         const appConfig = await window.api.getAppConfig();
         window.appConfig = { app: appConfig };
-        
+
         // Set document title dynamically
         document.title = window.appConfig.app.title;
-        
+
         // Set title bar text
         const titleBarText = document.querySelector('.title-bar-text');
         if (titleBarText) {

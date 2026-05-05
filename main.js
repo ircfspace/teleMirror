@@ -63,12 +63,12 @@ if (!gotTheLock) {
 
             console.log('Loading HTML file...');
             mainWindow.loadFile(appConfig.paths.mainHtml);
-            
+
             // Set title again after HTML is loaded
             mainWindow.webContents.once('did-finish-load', () => {
                 mainWindow.setTitle('TeleMirror');
             });
-            
+
             console.log('Window loaded successfully');
         } catch (error) {
             console.error('Error in createWindow:', error);

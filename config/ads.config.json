@@ -1,0 +1,19 @@
+{
+    "settings": {
+        "enabled": true,
+        "position": "before_last",
+        "showLabel": true,
+        "labelText": "AD",
+        "closeButton": true,
+        "hideDuration": 24
+    },
+    "ads": [
+        {
+            "id": "ad_001",
+            "name": "DEFYX | مارکت‌پلیس دیفیکس",
+            "image": "../assets/img/channel/defyxvpn.jpg",
+            "caption": "در شرایطی که به‌دلیل محدودیت‌ها و اختلال شدید اینترنت در ایران دسترسی به VPNهای قابل‌اعتماد سخت‌تر شده و کلاهبرداری‌ها افزایش یافته، مارکت‌پلیس دیفیکس برای ارائه یک جایگزین امن‌تر ایجاد شده است.<br><br>پرداخت‌ها به‌صورت امانی انجام می‌شود و تنها پس از تحویل موفق آزاد می‌گردد. کاربران می‌توانند بازخورد واقعی ثبت کنند و در صورت نیاز با پشتیبانی Defyx یا فروشنده در ارتباط باشند. این موضوع به خریداران کمک می‌کند انتخاب بهتری داشته باشند و در عین حال به فروشندگان دیده‌شدن بیشتری می‌دهد.<br><br>در حال حاضر، برای کاربران داخل ایران هیچ کارمزدی دریافت نمی‌شود و تمرکز بر حفظ دسترسی آنلاین است. این پلتفرم هنوز در مراحل ابتدایی قرار دارد و با بازخورد شما بهبود خواهد یافت.<br>در عین حال، مهم است تأکید شود که خود <a href=\"https://t.me/hashtag/Defyx\" target=\"_blank\" style=\"color: #0088cc; text-decoration: underline;\">#Defyx</a> ارائه‌دهنده سرویس نیست. مأموریت اصلی آن همچنان ارائه یک سرویس پایدار، امن و تا حد امکان رایگان باقی می‌ماند. ایجاد این مارکت‌پلیس صرفاً پاسخی به یک نیاز واقعی در شرایط فعلی است و ماهیت اصلی پروژه را تغییر نمی‌دهد.<br><br><a href=\"https://market.defyxvpn.com\" target=\"_blank\" style=\"color: #4A90E2; text-decoration: underline;\">market.defyxvpn.com</a><br>👉 <a href=\"https://t.me/DefyxVPN_bot\" target=\"_blank\" style=\"color: #0088cc; text-decoration: underline;\">t.me/DefyxVPN_bot</a>",
+            "isActive": true
+        }
+    ]
+}

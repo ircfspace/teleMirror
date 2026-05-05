@@ -9,7 +9,12 @@ class ChannelManager {
         // Add default channels if list is empty
         if (this.channels.length === 0) {
             this.channels = [
-                { username: 'ircfspace', name: 'IRCF | اینترنت آزاد برای همه', loading: false, pinned: true },
+                {
+                    username: 'ircfspace',
+                    name: 'IRCF | اینترنت آزاد برای همه',
+                    loading: false,
+                    pinned: true
+                },
                 { username: 'vahidonline', name: 'وحید آنلاین', loading: false },
                 { username: 'persianvpnhub', name: 'فیلترشکن رایگان', loading: false }
             ];
@@ -55,9 +60,7 @@ class ChannelManager {
         );
 
         if (this.channels.length !== originalLength) {
-            console.log(
-                `Cleaned up ${originalLength - this.channels.length} invalid channels`
-            );
+            console.log(`Cleaned up ${originalLength - this.channels.length} invalid channels`);
             this.saveChannels();
             this.renderChannels();
         }
@@ -185,8 +188,8 @@ class ChannelManager {
     // Ensure ircfspace channel exists and is pinned
     ensurePinnedChannel() {
         const pinnedUsername = 'ircfspace';
-        let pinnedChannel = this.channels.find(c => c.username === pinnedUsername);
-        
+        let pinnedChannel = this.channels.find((c) => c.username === pinnedUsername);
+
         if (!pinnedChannel) {
             // Add pinned channel if it doesn't exist
             pinnedChannel = {
@@ -200,13 +203,13 @@ class ChannelManager {
             // Ensure it's marked as pinned
             pinnedChannel.pinned = true;
             // Move to top if not already there
-            const index = this.channels.findIndex(c => c.username === pinnedUsername);
+            const index = this.channels.findIndex((c) => c.username === pinnedUsername);
             if (index > 0) {
                 this.channels.splice(index, 1);
                 this.channels.unshift(pinnedChannel);
             }
         }
-        
+
         this.saveChannels();
     }
 
@@ -216,7 +219,7 @@ class ChannelManager {
             alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
             return;
         }
-        
+
         this.channels = this.channels.filter((c) => c.username !== username);
         this.saveChannels();
         // Clear cache for removed channel
@@ -242,13 +245,12 @@ class ChannelManager {
 
     // Get channel avatar image (local image first, then fallback)
     getChannelAvatar(channel) {
-        const avatarText = channel.name && channel.name.length > 0
-            ? channel.name.charAt(0).toUpperCase()
-            : '?';
-        
+        const avatarText =
+            channel.name && channel.name.length > 0 ? channel.name.charAt(0).toUpperCase() : '?';
+
         // Check if local image exists for this channel
         const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
-        
+
         if (channel.photo) {
             // Use Telegram photo if available
             return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
@@ -330,17 +332,15 @@ class ChannelManager {
         // Handle delete channel
         leaveButton.addEventListener('click', () => {
             if (this.activeChannel) {
-                const channel = this.channels.find(
-                    (c) => c.username === this.activeChannel
-                );
+                const channel = this.channels.find((c) => c.username === this.activeChannel);
                 const channelName = channel ? channel.name : this.activeChannel;
-                
+
                 // Prevent deletion of pinned channels
                 if (this.activeChannel === 'ircfspace') {
                     alert('کانال "اینترنت آزاد" نمی‌تواند حذف شود');
                     return;
                 }
-                
+
                 if (confirm(`Delete channel "${channelName}"?`)) {
                     this.removeChannel(this.activeChannel);
                 }
@@ -350,13 +350,12 @@ class ChannelManager {
 
     // Get header channel avatar (local image first, then fallback)
     getHeaderChannelAvatar(channel) {
-        const avatarText = channel.name && channel.name.length > 0
-            ? channel.name.charAt(0).toUpperCase()
-            : '?';
-        
+        const avatarText =
+            channel.name && channel.name.length > 0 ? channel.name.charAt(0).toUpperCase() : '?';
+
         // Check if local image exists for this channel
         const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
-        
+
         if (channel.photo) {
             // Use Telegram photo if available
             return `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
@@ -381,11 +380,9 @@ class ChannelManager {
         if (channel) {
             console.log('Updating message header for', channel.username, {
                 hasPhoto: !!channel.photo,
-                photoUrl: channel.photo
-                    ? channel.photo.substring(0, 50) + '...'
-                    : 'none'
+                photoUrl: channel.photo ? channel.photo.substring(0, 50) + '...' : 'none'
             });
-            
+
             avatar.innerHTML = this.getHeaderChannelAvatar(channel);
             title.textContent = channel.name;
             subtitle.textContent = `@${channel.username}`;
@@ -508,9 +505,7 @@ class ChannelManager {
 
         if (data.channel) {
             // Update channel info if available
-            const channel = this.channels.find(
-                (c) => c.username === this.activeChannel
-            );
+            const channel = this.channels.find((c) => c.username === this.activeChannel);
             if (channel && data.channel.title) {
                 channel.name = data.channel.title;
                 console.log('Channel data received:', {
@@ -520,10 +515,7 @@ class ChannelManager {
                 });
                 if (data.channel.photo) {
                     channel.photo = data.channel.photo;
-                    console.log(
-                        'Channel photo saved:',
-                        channel.photo.substring(0, 100) + '...'
-                    );
+                    console.log('Channel photo saved:', channel.photo.substring(0, 100) + '...');
                 }
                 this.saveChannels();
                 this.updateMessageHeader();
@@ -537,9 +529,7 @@ class ChannelManager {
                 messageEl.className = 'message';
 
                 // Get channel photo for avatar
-                const channel = this.channels.find(
-                    (c) => c.username === this.activeChannel
-                );
+                const channel = this.channels.find((c) => c.username === this.activeChannel);
                 const avatarHtml =
                     channel && channel.photo
                         ? `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 
@@ -599,6 +589,11 @@ class ChannelManager {
                 No messages found
             </div>
         `;
+        }
+
+        // Insert ads after all messages are rendered
+        if (typeof adService !== 'undefined' && data.posts && data.posts.length > 0) {
+            adService.insertAd(container, data.posts);
         }
 
         // Auto-scroll to bottom to show newest messages
@@ -761,7 +756,7 @@ class ChannelManager {
     updateSingleChannel(updatedChannel) {
         const container = document.getElementById('channelsContainer');
         const channelElements = container.querySelectorAll('.channel-item');
-        
+
         channelElements.forEach((channelEl) => {
             const usernameEl = channelEl.querySelector('.channel-username');
             if (usernameEl && usernameEl.textContent === `@${updatedChannel.username}`) {
@@ -771,7 +766,7 @@ class ChannelManager {
                     const avatarHtml = this.getChannelAvatar(updatedChannel);
                     avatarEl.innerHTML = avatarHtml;
                 }
-                
+
                 // Update name
                 const nameEl = channelEl.querySelector('.channel-name');
                 if (nameEl) {
@@ -801,9 +796,7 @@ class ChannelManager {
             const avatarText = channel.name.charAt(0).toUpperCase();
             console.log(`Rendering avatar for ${channel.username}:`, {
                 hasPhoto: !!channel.photo,
-                photoUrl: channel.photo
-                    ? channel.photo.substring(0, 50) + '...'
-                    : 'none'
+                photoUrl: channel.photo ? channel.photo.substring(0, 50) + '...' : 'none'
             });
             const avatarHtml = channel.photo
                 ? `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" 

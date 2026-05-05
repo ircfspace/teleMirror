@@ -11,7 +11,6 @@ teleMirror provides a reliable way to access Telegram channels in heavily filter
 - 💾 **Smart Caching**: Reduces requests and improves loading speed
 - 📊 **Rich Content**: Display posts with views, and media previews
 
-
 ![Cover](.github/images/screenshot.png)
 
 ## Installation

@@ -27,7 +27,7 @@ const appConfig = {
         defaultSrc: "'self'",
         scriptSrc: "'self' 'unsafe-inline'",
         styleSrc: "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        fontSrc: "https://fonts.gstatic.com",
+        fontSrc: 'https://fonts.gstatic.com',
         connectSrc: "'self' http://localhost:9876",
         imgSrc: "'self' data: https://cdn1.telesco.pe https://cdn2.telesco.pe https://cdn3.telesco.pe https://cdn.telesco.pe https://t.me"
     }

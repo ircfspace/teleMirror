@@ -47,7 +47,11 @@ class FlowManager {
      * @returns {Promise<Object>} - Result with data or error
      */
     async executeOfflineFlow(url, progressCallback) {
-        progressCallback?.(this.steps.OFFLINE_GITHUB_DIRECT, 'آفلاین: در حال تلاش برای داده‌های کش شده...', 30);
+        progressCallback?.(
+            this.steps.OFFLINE_GITHUB_DIRECT,
+            'آفلاین: در حال تلاش برای داده‌های کش شده...',
+            30
+        );
 
         const username = this.extractUsernameFromUrl(url);
         if (!username) {
@@ -61,7 +65,11 @@ class FlowManager {
         try {
             const githubData = await this.fetchGitHubJsonData(username);
             if (githubData) {
-                progressCallback?.(this.steps.OFFLINE_GITHUB_DIRECT, 'داده‌های کش شده با موفقیت بارگذاری شد', 100);
+                progressCallback?.(
+                    this.steps.OFFLINE_GITHUB_DIRECT,
+                    'داده‌های کش شده با موفقیت بارگذاری شد',
+                    100
+                );
                 return {
                     success: true,
                     data: githubData,
@@ -107,7 +115,11 @@ class FlowManager {
                 typeof response.data === 'string' &&
                 response.data.includes('<html')
             ) {
-                progressCallback?.(this.steps.ONLINE_TELEGRAM, 'داده‌های تلگرام با موفقیت دریافت شد', 100);
+                progressCallback?.(
+                    this.steps.ONLINE_TELEGRAM,
+                    'داده‌های تلگرام با موفقیت دریافت شد',
+                    100
+                );
                 return {
                     success: true,
                     data: this.parseTelegramData(response.data),
@@ -124,7 +136,11 @@ class FlowManager {
         }
 
         // Step 3: GitHub fallback for online mode
-        progressCallback?.(this.steps.ONLINE_GITHUB_FALLBACK, 'آنلاین: در حال تلاش برای کش به عنوان فال‌بک...', 60);
+        progressCallback?.(
+            this.steps.ONLINE_GITHUB_FALLBACK,
+            'آنلاین: در حال تلاش برای کش به عنوان فال‌بک...',
+            60
+        );
         return await this.executeGitHubFallback(url, progressCallback, 'online_fallback');
     }
 
@@ -148,7 +164,11 @@ class FlowManager {
         try {
             const githubData = await this.fetchGitHubJsonData(username);
             if (githubData) {
-                progressCallback?.(this.steps.ONLINE_GITHUB_FALLBACK, 'داده‌های کش با موفقیت بارگذاری شد', 100);
+                progressCallback?.(
+                    this.steps.ONLINE_GITHUB_FALLBACK,
+                    'داده‌های کش با موفقیت بارگذاری شد',
+                    100
+                );
                 return {
                     success: true,
                     data: githubData,

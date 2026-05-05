@@ -65,7 +65,12 @@ class PersianCalendar {
                 return dateString;
             }
 
-            console.log('Converting to Persian date:', date.getFullYear(), date.getMonth() + 1, date.getDate());
+            console.log(
+                'Converting to Persian date:',
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate()
+            );
 
             const today = new Date();
             const todayYear = today.getFullYear();
@@ -73,8 +78,16 @@ class PersianCalendar {
             const todayDay = today.getDate();
 
             // Convert to Persian calendar
-            const [persianYear, persianMonth, persianDay] = this.gregorianToPersian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-            const [todayPersianYear, todayPersianMonth, todayPersianDay] = this.gregorianToPersian(todayYear, todayMonth, todayDay);
+            const [persianYear, persianMonth, persianDay] = this.gregorianToPersian(
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate()
+            );
+            const [todayPersianYear, todayPersianMonth, todayPersianDay] = this.gregorianToPersian(
+                todayYear,
+                todayMonth,
+                todayDay
+            );
 
             const persianMonths = [
                 'فروردین',
@@ -92,7 +105,11 @@ class PersianCalendar {
             ];
 
             // Format based on recency using Persian dates
-            if (persianYear === todayPersianYear && persianMonth === todayPersianMonth && persianDay === todayPersianDay) {
+            if (
+                persianYear === todayPersianYear &&
+                persianMonth === todayPersianMonth &&
+                persianDay === todayPersianDay
+            ) {
                 return 'امروز';
             } else if (
                 persianYear === todayPersianYear &&
@@ -108,12 +125,7 @@ class PersianCalendar {
                 return `${persianDay} ${persianMonths[persianMonth - 1]} ${persianYear}`;
             }
         } catch (error) {
-            console.error(
-                'Persian date formatting error:',
-                error,
-                'for date:',
-                dateString
-            );
+            console.error('Persian date formatting error:', error, 'for date:', dateString);
             return dateString; // Fallback to original date
         }
     }

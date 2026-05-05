@@ -48,7 +48,7 @@ function createServer(port = 9876) {
         // Set up progress listener if requestId provided
         if (requestId && activeRequests.has(requestId)) {
             const requestData = activeRequests.get(requestId);
-            
+
             // Create progress callback that broadcasts to all listeners
             const progressCallback = (step, message, percent) => {
                 const progressData = { step, message, percent, timestamp: Date.now() };
@@ -60,7 +60,7 @@ function createServer(port = 9876) {
             try {
                 // Execute the complete flow using FlowManager
                 const result = await flowManager.executeFlow(url, progressCallback);
-                
+
                 console.log('Flow execution result:', {
                     success: result.success,
                     flow: result.flow,
@@ -97,7 +97,6 @@ function createServer(port = 9876) {
         }
     });
 
-    
     return new Promise((resolve) => {
         const server = app.listen(port, () => {
             resolve({ server, port });
