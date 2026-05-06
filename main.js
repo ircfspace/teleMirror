@@ -32,8 +32,10 @@ if (!gotTheLock) {
             Menu.setApplicationMenu(null);
 
             console.log('Creating server...');
-            serverInstance = await createServer(appConfig.server.port);
-            console.log(`Server created on port ${appConfig.server.port}`);
+            const serverResult = await createServer(appConfig.server.port);
+            serverInstance = serverResult.server;
+            actualServerPort = serverResult.port;
+            console.log(`Server created on port ${actualServerPort}`);
 
             console.log('Creating window...');
 
@@ -97,11 +99,18 @@ if (!gotTheLock) {
         return await adsConfigLoader.loadAdsConfig();
     });
 
+    // Store actual port globally for access in IPC handlers
+    let actualServerPort = appConfig.server.port;
+
+    ipcMain.handle('get-server-port', () => {
+        return actualServerPort;
+    });
+
     // Cleanup function to close server
     function cleanup() {
-        if (serverInstance && serverInstance.server) {
+        if (serverInstance) {
             console.log('Closing server...');
-            serverInstance.server.close(() => {
+            serverInstance.close(() => {
                 console.log('Server closed successfully');
             });
         }

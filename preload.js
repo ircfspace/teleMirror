@@ -6,9 +6,13 @@ function generateRequestId() {
 
 contextBridge.exposeInMainWorld('api', {
     generateRequestId,
+    getServerPort: async () => {
+        return await ipcRenderer.invoke('get-server-port');
+    },
     fetchUrl: async (url, requestId) => {
         const lang = localStorage.getItem('appLanguage') || 'en';
-        const res = await fetch('http://localhost:9876/fetch', {
+        const port = await ipcRenderer.invoke('get-server-port');
+                const res = await fetch(`http://localhost:${port}/fetch`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url, requestId, lang })
@@ -16,10 +20,11 @@ contextBridge.exposeInMainWorld('api', {
 
         return res.json();
     },
-    connectProgress: (requestId, onProgress) => {
+    connectProgress: async (requestId, onProgress) => {
         const lang = localStorage.getItem('appLanguage') || 'en';
-        const eventSource = new EventSource(
-            `http://localhost:9876/progress/${requestId}?lang=${lang}`
+        const port = await ipcRenderer.invoke('get-server-port');
+                const eventSource = new EventSource(
+            `http://localhost:${port}/progress/${requestId}?lang=${lang}`
         );
 
         eventSource.onmessage = (event) => {
@@ -27,7 +32,8 @@ contextBridge.exposeInMainWorld('api', {
             onProgress(data);
         };
 
-        eventSource.onerror = () => {
+        eventSource.onerror = (error) => {
+            console.error('EventSource error:', error);
             eventSource.close();
         };
 
