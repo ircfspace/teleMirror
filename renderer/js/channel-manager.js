@@ -388,11 +388,7 @@ class ChannelManager {
         const viewButton = document.getElementById('headerViewButton');
 
         if (channel) {
-            console.log('Updating message header for', channel.username, {
-                hasPhoto: !!channel.photo,
-                photoUrl: channel.photo ? channel.photo.substring(0, 50) + '...' : 'none'
-            });
-
+            
             avatar.innerHTML = this.getHeaderChannelAvatar(channel);
             title.textContent = channel.name;
             subtitle.textContent = `@${channel.username}`;
@@ -429,7 +425,6 @@ class ChannelManager {
         // Check cache first
         const cachedData = this.getCachedData(username);
         if (cachedData) {
-            console.log(`Using cached data for ${username}`);
             this.renderMessages(cachedData, username);
             return;
         }
@@ -437,20 +432,43 @@ class ChannelManager {
         container.innerHTML = `<div style="text-align: center; padding: 20px; color: #8a9ba8;">${I18n.t('loadingMessages')}</div>`;
 
         let disconnectProgress;
+        let progressTimeout;
 
         try {
             // Show progress
             ProgressManager.show();
 
             const requestId = window.api.generateRequestId();
-            disconnectProgress = window.api.connectProgress(requestId, (progress) => {
+            
+            // Set a timeout for progress connection
+            progressTimeout = setTimeout(() => {
+                console.warn('Progress connection timeout');
+                ProgressManager.update({
+                    stage: 0,
+                    message: I18n.t('connectionTimeout'),
+                    percent: 0
+                });
+            }, 30000); // 30 seconds timeout
+
+            disconnectProgress = await window.api.connectProgress(requestId, (progress) => {
+                // Clear timeout when we receive progress
+                if (progressTimeout) {
+                    clearTimeout(progressTimeout);
+                    progressTimeout = null;
+                }
                 ProgressManager.update(progress);
             });
 
             // Add delay to avoid rate limiting
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            const response = await window.api.fetchUrl(username, requestId);
+            // Set timeout for fetch request
+            const fetchPromise = window.api.fetchUrl(username, requestId);
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout')), 45000); // 45 seconds timeout
+            });
+
+            const response = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (response.success && response.data) {
                 // Cache successful response
@@ -468,6 +486,12 @@ class ChannelManager {
 
                 ProgressManager.hide();
                 if (disconnectProgress) disconnectProgress();
+                
+                // Cleanup timeout
+                if (progressTimeout) {
+                    clearTimeout(progressTimeout);
+                    progressTimeout = null;
+                }
 
                 this.renderMessages(response.data, username);
             } else {
@@ -489,10 +513,12 @@ class ChannelManager {
             `;
             }
         } catch (error) {
+            console.error('Error loading channel messages:', error);
+            
             // Show error in progress before hiding
             ProgressManager.update({
                 stage: 0,
-                message: I18n.t('error', error.message),
+                message: I18n.t('error', error.message || I18n.t('connectionFailed')),
                 percent: 0
             });
             // Wait longer to show error message in progress bar
@@ -502,14 +528,27 @@ class ChannelManager {
 
             container.innerHTML = `
             <div style="text-align: center; padding: 20px; color: #e74c3c;">
-                ${I18n.t('error', error.message)}
+                ${I18n.t('error', error.message || I18n.t('connectionFailed'))}
             </div>
         `;
+        } finally {
+            // Cleanup timeout and progress connection
+            if (progressTimeout) {
+                clearTimeout(progressTimeout);
+                progressTimeout = null;
+            }
+            if (disconnectProgress) {
+                disconnectProgress();
+                disconnectProgress = null;
+            }
         }
     }
 
     renderMessages(data, username) {
         const container = document.getElementById('messageContainer');
+
+        // Clear loading message immediately
+        container.innerHTML = '';
 
         // Update channel metadata for the correct channel (regardless of active state)
         if (data.channel) {
@@ -517,15 +556,9 @@ class ChannelManager {
             if (channel) {
                 if (data.channel.title) {
                     channel.name = data.channel.title;
-                    console.log('Channel data received:', {
-                        title: data.channel.title,
-                        photo: data.channel.photo,
-                        photoLength: data.channel.photo ? data.channel.photo.length : 0
-                    });
                 }
                 if (data.channel.photo) {
                     channel.photo = data.channel.photo;
-                    console.log('Channel photo saved:', channel.photo.substring(0, 100) + '...');
                 }
                 this.saveChannels();
             }
@@ -535,8 +568,6 @@ class ChannelManager {
         if (this.activeChannel !== username) {
             return;
         }
-
-        container.innerHTML = '';
 
         // Update header and sidebar for the active channel
         if (data.channel) {
@@ -565,7 +596,7 @@ class ChannelManager {
                     } else {
                         avatarHtml = `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
                   onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
-                  onload="console.log('Local post avatar loaded successfully');" />`;
+                  onload="loaded successfully);" />`;
                     }
                 }
 
