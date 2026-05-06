@@ -4,15 +4,15 @@ const { ServerI18n } = require('./i18n');
 
 async function findAvailablePort(startPort) {
     const net = require('net');
-    
+
     return new Promise((resolve) => {
         const server = net.createServer();
-        
+
         server.listen(startPort, () => {
             const port = server.address().port;
             server.close(() => resolve(port));
         });
-        
+
         server.on('error', () => {
             // Port is in use, try next port
             resolve(findAvailablePort(startPort + 1));
@@ -127,7 +127,7 @@ async function createServer(port) {
 
     // Find available port starting from the configured port
     const availablePort = await findAvailablePort(port);
-    
+
     return new Promise((resolve) => {
         const server = app.listen(availablePort, () => {
             console.log(`Server running on port ${availablePort}`);

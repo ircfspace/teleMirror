@@ -62,7 +62,10 @@
             "artifactName": "tele-mirror-linux-${arch}.tar.gz"
         },
         "mac": {
-            "target": ["zip", "dmg"],
+            "target": [
+                "zip",
+                "dmg"
+            ],
             "icon": "assets/teleMirror.png",
             "artifactName": "tele-mirror-mac-${arch}.${ext}"
         },

@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('api', {
     fetchUrl: async (url, requestId) => {
         const lang = localStorage.getItem('appLanguage') || 'en';
         const port = await ipcRenderer.invoke('get-server-port');
-                const res = await fetch(`http://localhost:${port}/fetch`, {
+        const res = await fetch(`http://localhost:${port}/fetch`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url, requestId, lang })
@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld('api', {
     connectProgress: async (requestId, onProgress) => {
         const lang = localStorage.getItem('appLanguage') || 'en';
         const port = await ipcRenderer.invoke('get-server-port');
-                const eventSource = new EventSource(
+        const eventSource = new EventSource(
             `http://localhost:${port}/progress/${requestId}?lang=${lang}`
         );
 

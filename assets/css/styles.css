@@ -481,6 +481,16 @@ body.light-theme ::-webkit-scrollbar-thumb:hover {
     pointer-events: none;
 }
 
+.channel-item.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.channel-item.disabled:hover {
+    background: transparent;
+}
+
 .channel-avatar {
     width: 36px;
     height: 36px;

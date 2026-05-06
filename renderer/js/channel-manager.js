@@ -2,6 +2,8 @@
 class ChannelManager {
     constructor() {
         this.channels = this.loadChannels();
+        this.isLoading = false; // Track loading state
+        this.pendingChannel = null; // Track pending channel switch
 
         // Clean up any invalid channels
         this.cleanupInvalidChannels();
@@ -245,6 +247,13 @@ class ChannelManager {
     }
 
     setActiveChannel(username) {
+        // Prevent channel switching while loading
+        if (this.isLoading) {
+            this.pendingChannel = username;
+            console.log('Channel selection deferred - currently loading:', username);
+            return;
+        }
+
         this.activeChannel = username;
         this.renderChannels();
         this.updateMessageHeader();
@@ -306,7 +315,10 @@ class ChannelManager {
         sortedChannels.forEach((channel) => {
             const channelEl = document.createElement('div');
             const isPinned = channel.pinned;
-            channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
+            const isActive = channel.username === this.activeChannel;
+            const isDisabled = this.isLoading && !isActive;
+
+            channelEl.className = `channel-item ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
 
             const avatarHtml = this.getChannelAvatar(channel);
 
@@ -318,9 +330,11 @@ class ChannelManager {
           </div>
         `;
 
-            channelEl.addEventListener('click', () => {
-                this.setActiveChannel(channel.username);
-            });
+            if (!isDisabled) {
+                channelEl.addEventListener('click', () => {
+                    this.setActiveChannel(channel.username);
+                });
+            }
 
             container.appendChild(channelEl);
         });
@@ -388,7 +402,6 @@ class ChannelManager {
         const viewButton = document.getElementById('headerViewButton');
 
         if (channel) {
-            
             avatar.innerHTML = this.getHeaderChannelAvatar(channel);
             title.textContent = channel.name;
             subtitle.textContent = `@${channel.username}`;
@@ -420,12 +433,21 @@ class ChannelManager {
     }
 
     async loadChannelMessages(username) {
+        // Prevent concurrent loading
+        if (this.isLoading) {
+            console.log('Already loading, skipping request for:', username);
+            return;
+        }
+
+        this.isLoading = true;
         const container = document.getElementById('messageContainer');
 
         // Check cache first
         const cachedData = this.getCachedData(username);
         if (cachedData) {
             this.renderMessages(cachedData, username);
+            this.isLoading = false;
+            this.processPendingChannel();
             return;
         }
 
@@ -439,7 +461,7 @@ class ChannelManager {
             ProgressManager.show();
 
             const requestId = window.api.generateRequestId();
-            
+
             // Set a timeout for progress connection
             progressTimeout = setTimeout(() => {
                 console.warn('Progress connection timeout');
@@ -486,7 +508,7 @@ class ChannelManager {
 
                 ProgressManager.hide();
                 if (disconnectProgress) disconnectProgress();
-                
+
                 // Cleanup timeout
                 if (progressTimeout) {
                     clearTimeout(progressTimeout);
@@ -514,7 +536,7 @@ class ChannelManager {
             }
         } catch (error) {
             console.error('Error loading channel messages:', error);
-            
+
             // Show error in progress before hiding
             ProgressManager.update({
                 stage: 0,
@@ -541,6 +563,9 @@ class ChannelManager {
                 disconnectProgress();
                 disconnectProgress = null;
             }
+
+            this.isLoading = false;
+            this.processPendingChannel();
         }
     }
 
@@ -852,7 +877,10 @@ class ChannelManager {
         sortedChannels.forEach((channel) => {
             const channelEl = document.createElement('div');
             const isPinned = channel.pinned;
-            channelEl.className = `channel-item ${channel.username === this.activeChannel ? 'active' : ''}`;
+            const isActive = channel.username === this.activeChannel;
+            const isDisabled = this.isLoading && !isActive;
+
+            channelEl.className = `channel-item ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
 
             const avatarHtml = this.getChannelAvatar(channel);
 
@@ -864,11 +892,22 @@ class ChannelManager {
           </div>
         `;
 
-            channelEl.addEventListener('click', () => {
-                this.setActiveChannel(channel.username);
-            });
+            if (!isDisabled) {
+                channelEl.addEventListener('click', () => {
+                    this.setActiveChannel(channel.username);
+                });
+            }
 
             container.appendChild(channelEl);
         });
+    }
+
+    processPendingChannel() {
+        if (this.pendingChannel && this.pendingChannel !== this.activeChannel) {
+            const pending = this.pendingChannel;
+            this.pendingChannel = null;
+            console.log('Processing pending channel switch to:', pending);
+            this.setActiveChannel(pending);
+        }
     }
 }
