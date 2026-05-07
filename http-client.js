@@ -264,59 +264,13 @@ class HttpClient extends EventEmitter {
                     };
                 }
 
-                // Try different proxy methods
-                let proxyMethod = currentProxyMethod;
+                // Use direct connection to preserve data-post attribute
+                let proxyMethod = 'direct';
                 let url;
 
-                if (proxyMethod === 'google') {
-                    // Convert to Google Translate proxy - exactly like PHP
-                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate', this.lang), 50);
-
-                    // Fix URL construction for Google Translate proxy
-                    const urlObj = new URL(originalUrl);
-                    const pathname = urlObj.pathname || '';
-                    const search = urlObj.search || '';
-                    const fullPath = pathname + search;
-
-                    // Use translate.goog subdomain instead of www.google.com
-                    url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=auto&_x_tr_tl=fa&_x_tr_hl=en&_x_tr_pto=wapp`;
-
-                    console.log('Proxy URL constructed:', url);
-                } else if (proxyMethod === 'google2') {
-                    // Alternative Google Translate endpoint
-                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate2', this.lang), 50);
-                    const urlObj = new URL(originalUrl);
-                    const pathname = urlObj.pathname || '';
-                    const search = urlObj.search || '';
-                    const fullPath = pathname + search;
-
-                    // Use different Google domain
-                    url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=fa&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
-                } else if (proxyMethod === 'google3') {
-                    // Another Google Translate endpoint with different parameters
-                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate3', this.lang), 50);
-                    const urlObj = new URL(originalUrl);
-                    const pathname = urlObj.pathname || '';
-                    const search = urlObj.search || '';
-                    const fullPath = pathname + search;
-
-                    // Use different Google domain and parameters
-                    url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
-                } else if (proxyMethod === 'google4') {
-                    // Fourth Google Translate endpoint with new IP
-                    this.emitProgress(5, ServerI18n.t('preparingGoogleTranslate4', this.lang), 50);
-                    const urlObj = new URL(originalUrl);
-                    const pathname = urlObj.pathname || '';
-                    const search = urlObj.search || '';
-                    const fullPath = pathname + search;
-
-                    // Use different Google domain and parameters
-                    url = `https://t-me.translate.goog${fullPath}?_x_tr_sl=ar&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp`;
-                } else {
-                    // Direct connection
-                    this.emitProgress(5, ServerI18n.t('tryingDirectMethod', this.lang), 50);
-                    url = originalUrl;
-                }
+                // Direct connection
+                this.emitProgress(5, ServerI18n.t('tryingDirectMethod', this.lang), 50);
+                url = originalUrl;
 
                 // Create axios config
                 this.emitProgress(7, ServerI18n.t('preparingHttpRequest', this.lang), 60);

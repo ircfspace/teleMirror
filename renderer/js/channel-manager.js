@@ -4,6 +4,15 @@ class ChannelManager {
         this.channels = this.loadChannels();
         this.isLoading = false; // Track loading state
         this.pendingChannel = null; // Track pending channel switch
+        this.pagination = {
+            currentPage: 0,
+            postsPerPage: 10,
+            allPosts: [],
+            displayedPosts: [],
+            displayedPostIds: new Set(),
+            isLoadingMore: false,
+            hasMorePosts: true
+        };
 
         // Clean up any invalid channels
         this.cleanupInvalidChannels();
@@ -603,89 +612,14 @@ class ChannelManager {
             }
         }
 
-        if (data.posts && data.posts.length > 0) {
-            data.posts.forEach((post) => {
-                const messageEl = document.createElement('div');
-                messageEl.className = 'message';
-
-                // Get channel photo for avatar (Telegram photo -> local -> text)
-                const channel = this.channels.find((c) => c.username === this.activeChannel);
-                const avatarText = post.author ? post.author.charAt(0).toUpperCase() : '?';
-                let avatarHtml = avatarText;
-                if (channel) {
-                    const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
-                    if (channel.photo) {
-                        avatarHtml = `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
-                  onerror="this.onerror = function() { this.style.display='none'; this.parentElement.innerHTML='${avatarText}'; }; this.src='${localImagePath}';"
-                  onload="console.log('Post avatar loaded successfully');" />`;
-                    } else {
-                        avatarHtml = `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
-                  onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
-                  onload="loaded successfully);" />`;
-                    }
-                }
-
-                const timeText = PersianCalendar.formatDate(post.time) || '';
-
-                const isOwn = post.isOwn || false;
-
-                let mediaHtml = '';
-                if (post.media && post.media.length > 0) {
-                    const photos = post.media.filter((media) => media.type === 'photo');
-                    const videos = post.media.filter((media) => media.type === 'video');
-
-                    if (photos.length > 0) {
-                        mediaHtml += this.createMediaGrid(photos);
-                    }
-
-                    if (videos.length > 0) {
-                        mediaHtml += videos
-                            .map(
-                                (video) =>
-                                    `<div style="background: #1a1a1b; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px;">
-                    📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
-                  </div>`
-                            )
-                            .join('');
-                    }
-                }
-
-                messageEl.innerHTML = `
-                <div class="message-avatar">${avatarHtml}</div>
-                <div class="message-content">
-                    <div class="message-header-info">
-                        <span class="message-author">${post.author || I18n.t('unknown')}</span>
-                        <span class="message-time">${timeText}${post.edited ? ' • ' + I18n.t('edited') : ''}</span>
-                    </div>
-                    <div class="message-bubble ${isOwn ? 'own' : ''}">
-                        ${post.text ? `<div class="message-text" dir="auto">${post.text}</div>` : ''}
-                        ${mediaHtml ? `<div class="message-media">${mediaHtml}</div>` : ''}
-                        <div class="message-views">
-                            👁 ${post.views || 0} ${I18n.t('views')}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-                container.appendChild(messageEl);
-            });
-        } else {
-            container.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #8a9ba8;">
-                ${I18n.t('noMessagesFound')}
-            </div>
-        `;
-        }
-
-        // Insert ads after all messages are rendered
-        if (typeof adService !== 'undefined' && data.posts && data.posts.length > 0) {
-            adService.insertAd(container, data.posts);
-        }
-
-        // Auto-scroll to bottom to show newest messages
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
+        // Initialize pagination with new data
+        this.initializePagination(data.posts || []);
+        
+        // Render first page of posts
+        this.renderPostsPage();
+        
+        // Setup scroll detection for load more
+        this.setupScrollDetection();
     }
 
     createMediaGrid(photos) {
@@ -913,6 +847,287 @@ class ChannelManager {
             this.pendingChannel = null;
             console.log('Processing pending channel switch to:', pending);
             this.setActiveChannel(pending);
+        }
+    }
+
+    // Pagination methods
+    initializePagination(posts) {
+        // Sort posts: oldest to newest (for proper pagination)
+        const sortedPosts = this.sortPostsByNewest(posts);
+        
+        this.pagination.allPosts = sortedPosts;
+        this.pagination.currentPage = 0;
+        this.pagination.displayedPosts = [];
+        this.pagination.displayedPostIds.clear();
+        this.pagination.loadedRange = {
+            start: Math.max(0, sortedPosts.length - this.pagination.postsPerPage),
+            end: sortedPosts.length
+        };
+        this.pagination.hasMorePosts = sortedPosts.length > this.pagination.postsPerPage;
+    }
+
+    sortPostsByNewest(posts) {
+        return [...posts].sort((a, b) => {
+            // Sort by ID first (for GitHub data)
+            if (a.id && b.id) {
+                const idA = parseInt(a.id) || 0;
+                const idB = parseInt(b.id) || 0;
+                return idA - idB; // Lowest ID first (oldest to newest)
+            }
+            
+            // Fallback to time sorting
+            const timeA = new Date(a.time || 0).getTime();
+            const timeB = new Date(b.time || 0).getTime();
+            return timeA - timeB; // Oldest first
+        });
+    }
+
+    renderPostsPage() {
+        const container = document.getElementById('messageContainer');
+        
+        // Get posts from loaded range (newest posts at end)
+        let postsToShow = this.pagination.allPosts.slice(this.pagination.loadedRange.start, this.pagination.loadedRange.end);
+        
+        // Filter out already displayed posts to prevent duplicates
+        postsToShow = postsToShow.filter(post => {
+            const postId = post.id || post.time || JSON.stringify(post);
+            return !this.pagination.displayedPostIds.has(postId);
+        });
+        
+        // Add new posts to displayed posts (at the end for newer posts)
+        this.pagination.displayedPosts = [...this.pagination.displayedPosts, ...postsToShow];
+        
+        // Track displayed post IDs
+        postsToShow.forEach(post => {
+            const postId = post.id || post.time || JSON.stringify(post);
+            this.pagination.displayedPostIds.add(postId);
+        });
+        
+        // Clear container and render all displayed posts
+        container.innerHTML = '';
+        
+        if (this.pagination.displayedPosts.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #8a9ba8;">
+                    ${I18n.t('noMessagesFound')}
+                </div>
+            `;
+            return;
+        }
+        
+        // Add load more spinner at top if there are more posts
+        if (this.pagination.hasMorePosts && !this.pagination.isLoadingMore) {
+            const loadMoreEl = document.createElement('div');
+            loadMoreEl.className = 'load-more-container';
+            loadMoreEl.id = 'loadMoreContainer';
+            loadMoreEl.innerHTML = `
+                <div class="load-more-spinner" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    ${I18n.t('loadingMore')}
+                </div>
+            `;
+            container.appendChild(loadMoreEl);
+        }
+        
+        // Render posts (oldest at top, newest at bottom)
+        this.pagination.displayedPosts.forEach((post) => {
+            const messageEl = this.createMessageElement(post);
+            container.appendChild(messageEl);
+        });
+        
+        // Insert ads after all messages are rendered
+        if (typeof adService !== 'undefined' && this.pagination.displayedPosts.length > 0) {
+            adService.insertAd(container, this.pagination.displayedPosts);
+        }
+        
+        // Scroll to bottom to show newest messages on first load
+        if (this.pagination.currentPage === 0) {
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+    }
+
+    createMessageElement(post) {
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message';
+
+        // Get channel photo for avatar (Telegram photo -> local -> text)
+        const channel = this.channels.find((c) => c.username === this.activeChannel);
+        const avatarText = post.author ? post.author.charAt(0).toUpperCase() : '?';
+        let avatarHtml = avatarText;
+        if (channel) {
+            const localImagePath = `../assets/img/channel/${channel.username}.jpg`;
+            if (channel.photo) {
+                avatarHtml = `<img src="${channel.photo}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+              onerror="this.onerror = function() { this.style.display='none'; this.parentElement.innerHTML='${avatarText}'; }; this.src='${localImagePath}';"
+              onload="console.log('Post avatar loaded successfully');" />`;
+            } else {
+                avatarHtml = `<img src="${localImagePath}" alt="${channel.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"
+              onerror="this.style.display='none'; this.parentElement.innerHTML='${avatarText}';"
+              onload="console.log('Local avatar loaded successfully');" />`;
+            }
+        }
+
+        const timeText = PersianCalendar.formatDate(post.time) || '';
+        const isOwn = post.isOwn || false;
+
+        let mediaHtml = '';
+        if (post.media && post.media.length > 0) {
+            const photos = post.media.filter((media) => media.type === 'photo');
+            const videos = post.media.filter((media) => media.type === 'video');
+
+            if (photos.length > 0) {
+                mediaHtml += this.createMediaGrid(photos);
+            }
+
+            if (videos.length > 0) {
+                mediaHtml += videos
+                    .map(
+                        (video) =>
+                            `<div style="background: #1a1a1b; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px;">
+                    📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
+                  </div>`
+                    )
+                    .join('');
+            }
+        }
+
+        messageEl.innerHTML = `
+            <div class="message-avatar">${avatarHtml}</div>
+            <div class="message-content">
+                <div class="message-header-info">
+                    <span class="message-author">${post.author || I18n.t('unknown')}</span>
+                    <span class="message-time">${timeText}${post.edited ? ' • ' + I18n.t('edited') : ''}</span>
+                </div>
+                <div class="message-bubble ${isOwn ? 'own' : ''}">
+                    ${post.text ? `<div class="message-text" dir="auto">${post.text}</div>` : ''}
+                    ${mediaHtml ? `<div class="message-media">${mediaHtml}</div>` : ''}
+                    <div class="message-views">
+                        👁 ${post.views || 0} ${I18n.t('views')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return messageEl;
+    }
+
+    setupScrollDetection() {
+        const container = document.getElementById('messageContainer');
+        
+        // Remove existing listener
+        if (this.scrollHandler) {
+            container.removeEventListener('scroll', this.scrollHandler);
+        }
+        
+        // Add new scroll listener
+        this.scrollHandler = () => {
+            console.log('Scroll detected:', container.scrollTop, 'hasMorePosts:', this.pagination.hasMorePosts, 'isLoadingMore:', this.pagination.isLoadingMore);
+            if (this.pagination.isLoadingMore || !this.pagination.hasMorePosts) {
+                return;
+            }
+            
+            // Check if scrolled to top (show older posts)
+            if (container.scrollTop <= 100) {
+                console.log('Loading more posts...');
+                this.loadMorePosts();
+            }
+        };
+        
+        container.addEventListener('scroll', this.scrollHandler);
+    }
+
+    async loadMorePosts() {
+        console.log('loadMorePosts called - isLoadingMore:', this.pagination.isLoadingMore, 'hasMorePosts:', this.pagination.hasMorePosts);
+        if (this.pagination.isLoadingMore || !this.pagination.hasMorePosts) {
+            return;
+        }
+        
+        this.pagination.isLoadingMore = true;
+        
+        // Show loading spinner
+        const spinnerEl = document.querySelector('.load-more-spinner');
+        if (spinnerEl) {
+            spinnerEl.style.display = 'block';
+        }
+        
+        // Simulate loading delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('Total posts:', this.pagination.allPosts.length);
+        
+        // Calculate older posts to load (before current loaded range)
+        const newEndIndex = this.pagination.loadedRange.start;
+        const newStartIndex = Math.max(0, newEndIndex - this.pagination.postsPerPage);
+        let postsToShow = this.pagination.allPosts.slice(newStartIndex, newEndIndex);
+        
+        console.log('Posts to show:', postsToShow.length, 'from index', newStartIndex, 'to', newEndIndex);
+        
+        if (postsToShow.length === 0) {
+            this.pagination.hasMorePosts = false;
+            console.log('No more posts to load');
+        } else {
+            // Update loaded range to include older posts
+            this.pagination.loadedRange.start = newStartIndex;
+            
+            // Add new posts to the beginning of displayed posts (older posts)
+            this.pagination.displayedPosts = [...postsToShow, ...this.pagination.displayedPosts];
+            
+            // Track displayed post IDs
+            postsToShow.forEach(post => {
+                const postId = post.id || post.time || JSON.stringify(post);
+                this.pagination.displayedPostIds.add(postId);
+            });
+            
+            // Re-render with new posts
+            this.renderPostsWithNewPosts(postsToShow);
+            
+            // Check if there are more older posts to load
+            this.pagination.hasMorePosts = newStartIndex > 0;
+            console.log('hasMorePosts updated to:', this.pagination.hasMorePosts);
+        }
+        
+        // Hide loading spinner
+        if (spinnerEl) {
+            spinnerEl.style.display = 'none';
+        }
+        
+        this.pagination.isLoadingMore = false;
+    }
+
+    renderPostsWithNewPosts(newPosts) {
+        const container = document.getElementById('messageContainer');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        
+        console.log('renderPostsWithNewPosts called with', newPosts.length, 'posts');
+        
+        // Get current scroll height to maintain position
+        const currentScrollHeight = container.scrollHeight;
+        const currentScrollTop = container.scrollTop;
+        
+        // Create and prepend new posts BEFORE the load more container
+        newPosts.forEach((post) => {
+            const messageEl = this.createMessageElement(post);
+            if (loadMoreContainer) {
+                container.insertBefore(messageEl, loadMoreContainer);
+            } else {
+                container.insertBefore(messageEl, container.firstChild);
+            }
+        });
+        
+        // Adjust scroll position to maintain visual position
+        const newScrollHeight = container.scrollHeight;
+        const heightDifference = newScrollHeight - currentScrollHeight;
+        container.scrollTop = currentScrollTop + heightDifference;
+        
+        console.log('Scroll adjustment:', heightDifference, 'new scrollTop:', container.scrollTop);
+        
+        // Update or remove load more container
+        if (loadMoreContainer) {
+            if (!this.pagination.hasMorePosts) {
+                loadMoreContainer.remove();
+            }
         }
     }
 }

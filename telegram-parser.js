@@ -115,9 +115,28 @@ class TelegramParser {
 
         // Extract post ID and link
         const postAttr = postElement.attr('data-post');
+        
         if (postAttr) {
-            post.id = postAttr;
+            // Extract ID from format "username/postID"
+            const parts = postAttr.split('/');
+            post.id = parts.length > 1 ? parts[1] : postAttr;
             post.link = `https://t.me/${postAttr}`;
+        } else {
+            // Try to find ID from link elements - look for post-specific links
+            const linkElement = postElement.find('a[href*="/"]');
+            let foundId = false;
+            
+            linkElement.each((i, elem) => {
+                if (foundId) return;
+                const href = $(elem).attr('href');
+                // Look for pattern like /username/1234 or /1234
+                const match = href?.match(/\/(\d+)(?:\/|$)/);
+                if (match && match[1]) {
+                    post.id = match[1];
+                    post.link = href;
+                    foundId = true;
+                }
+            });
         }
 
         // Extract author info

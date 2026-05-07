@@ -25,6 +25,7 @@ const enTranslations = {
     clickPlusToAdd: 'You can add it by clicking +',
     unknown: 'Unknown',
     adLabel: 'Advertisement',
+    loadingMore: 'Loading more messages...',
     today: 'Today',
     yesterday: 'Yesterday',
     january: 'January',

@@ -1007,6 +1007,32 @@ body.lang-fa .progress-message {
     vertical-align: middle;
 }
 
+/* Pagination Styles */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 10px 0;
+    min-height: 60px;
+}
+
+.load-more-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8a9ba8;
+    font-size: 14px;
+    gap: 8px;
+}
+
+.load-more-spinner .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border-width: 1.5px;
+    margin-right: 0;
+}
+
 /* Light theme spinner */
 body.light-theme .loading-spinner {
     border: 2px solid rgba(0, 0, 0, 0.3);

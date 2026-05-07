@@ -25,6 +25,7 @@ const faTranslations = {
     clickPlusToAdd: 'می‌توانید با کلیک روی + آن را اضافه کنید',
     unknown: 'نامشخص',
     adLabel: 'تبلیغات',
+    loadingMore: 'در حال بارگذاری پیام‌های بیشتر...',
     today: 'امروز',
     yesterday: 'دیروز',
     january: 'فروردین',
