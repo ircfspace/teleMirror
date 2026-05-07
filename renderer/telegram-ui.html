@@ -109,20 +109,76 @@
 
         <!-- Bottom Menu Bar -->
         <div class="bottom-menu">
-            <button
-                class="menu-btn"
-                id="themeSwitchBottom"
-                data-i18n="changeTheme"
-                title="Change Theme"
-            >
-                <span class="menu-icon">🌙</span>
-            </button>
-            <button class="menu-btn" id="langSwitchBottom" title="Language">
-                <span class="menu-icon">🌐</span>
+            <button class="menu-btn" id="settingsBtnBottom" data-i18n="settings" title="Settings">
+                <span class="menu-icon">⚙️</span>
             </button>
             <button class="menu-btn" id="donateBtnBottom" data-i18n="donate" title="Donate">
                 <span class="menu-icon">☕</span>
             </button>
+        </div>
+
+        <!-- Settings Dialog -->
+        <div class="settings-dialog" id="settingsDialog">
+            <div class="settings-dialog-content">
+                <div class="settings-dialog-header">
+                    <h2 data-i18n="settings">Settings</h2>
+                    <button class="settings-dialog-close" id="settingsDialogClose">×</button>
+                </div>
+                <div class="settings-dialog-body">
+                    <div class="settings-section">
+                        <h3 data-i18n="language">Language</h3>
+                        <div class="settings-toggle-group">
+                            <label class="settings-toggle">
+                                <input type="radio" name="language" value="en" checked />
+                                <span data-i18n="english">English</span>
+                            </label>
+                            <label class="settings-toggle">
+                                <input type="radio" name="language" value="fa" />
+                                <span data-i18n="persian">فارسی</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h3 data-i18n="theme">Theme</h3>
+                        <div class="settings-toggle-group">
+                            <label class="settings-toggle">
+                                <input type="radio" name="theme" value="dark" checked />
+                                <span data-i18n="darkTheme">Dark Theme</span>
+                            </label>
+                            <label class="settings-toggle">
+                                <input type="radio" name="theme" value="light" />
+                                <span data-i18n="lightTheme">Light Theme</span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="settings-section">
+                        <h3 data-i18n="versionMode">Version Mode</h3>
+                        <div class="settings-toggle-group">
+                            <label class="settings-toggle">
+                                <input type="radio" name="versionMode" value="light" checked />
+                                <span data-i18n="lightVersion">Light Version</span>
+                            </label>
+                            <label class="settings-toggle">
+                                <input type="radio" name="versionMode" value="normal" />
+                                <span data-i18n="normalVersion">Normal Version</span>
+                            </label>
+                        </div>
+                        <p class="settings-description" data-i18n="versionModeDescription">
+                            Light version uses smaller data size, normal version tries to receive
+                            images as base64 encoded.
+                        </p>
+                    </div>
+                    <div class="settings-section">
+                        <button class="settings-danger-btn" id="restoreDefaultsBtn">
+                            <span data-i18n="restoreDefaults">Restore Defaults</span>
+                        </button>
+                        <p class="settings-description" data-i18n="restoreDefaultsDescription">
+                            Clear all cached data and restore default channel list.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Load JavaScript modules -->
@@ -136,6 +192,7 @@
         <script src="js/progress-manager.js"></script>
         <script src="js/theme-manager.js"></script>
         <script src="js/language-manager.js"></script>
+        <script src="js/settings-manager.js"></script>
         <script src="js/init.js"></script>
     </body>
 </html>

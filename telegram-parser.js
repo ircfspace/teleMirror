@@ -194,7 +194,7 @@ class TelegramParser {
     parseMedia($, postElement) {
         const media = [];
 
-        // Parse photos
+        // Parse photos from HTML (for light version)
         postElement.find('.tgme_widget_message_photo_wrap').each((i, elem) => {
             const $elem = $(elem);
             const photo = {
@@ -268,6 +268,33 @@ class TelegramParser {
             posts: this.parsePosts(html),
             totalPosts: $('.tgme_widget_message_wrap').length
         };
+    }
+
+    // Parse posts from JSON data (for normal version with base64 images)
+    parsePostsFromJson(posts) {
+        return posts.map((post) => {
+            // Parse media from JSON data
+            if (post.media && post.media.length > 0) {
+                post.media = post.media.map((media) => {
+                    if (
+                        media.type === 'photo' &&
+                        media.url &&
+                        media.url.startsWith('data:image/')
+                    ) {
+                        // Base64 image from JSON
+                        return {
+                            type: 'photo',
+                            url: media.url,
+                            thumb: media.url,
+                            width: media.width || '',
+                            paddingTop: media.height || ''
+                        };
+                    }
+                    return media;
+                });
+            }
+            return post;
+        });
     }
 }
 

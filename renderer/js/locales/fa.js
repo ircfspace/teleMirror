@@ -80,5 +80,24 @@ const faTranslations = {
     dnsResolutionFailed: 'تبدیل DNS ناموفق بود',
     connectionReset: 'اتصال توسط طرف مقابل قطع شد',
     flowExecutionError: 'خطا در اجرای فرآیند: {0}',
-    loading: 'در حال بارگذاری...'
+    loading: 'در حال بارگذاری...',
+    settings: 'تنظیمات',
+    versionMode: 'حالت نسخه',
+    lightVersion: 'سبک',
+    normalVersion: 'عادی',
+    versionModeDescription:
+        'نسخه سبک از حجم کمتر داده استفاده می‌کند، نسخه عادی سعی می‌کند تصاویر را به صورت رمزگذاری شده base64 دریافت کند.',
+    theme: 'تم',
+    darkTheme: 'تاریک',
+    lightTheme: 'روشن',
+    themeDescription: 'بین تم تاریک و روشن برای برنامه انتخاب کنید.',
+    language: 'زبان',
+    english: 'English',
+    persian: 'فارسی',
+    languageDescription: 'زبان مورد نظر خود را برای رابط کاربری انتخاب کنید.',
+    restoreDefaults: 'بازگردانی به پیشفرض',
+    restoreDefaultsDescription: 'پاک کردن تمام داده‌های کش شده و بازگردانی لیست کانال‌های پیشفرض.',
+    settingsRestored: 'تنظیمات با موفقیت بازگردانی شد!',
+    confirmRestoreDefaults:
+        'آیا مطمئن هستید که می‌خواهید تنظیمات را به پیشفرض برگردانید؟ این کار تمام داده‌های کش شده را پاک می‌کند.'
 };

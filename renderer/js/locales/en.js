@@ -80,5 +80,24 @@ const enTranslations = {
     dnsResolutionFailed: 'DNS resolution failed',
     connectionReset: 'Connection reset by peer',
     flowExecutionError: 'Flow execution error: {0}',
-    loading: 'Loading...'
+    loading: 'Loading...',
+    settings: 'Settings',
+    versionMode: 'Version Mode',
+    lightVersion: 'Light',
+    normalVersion: 'Normal',
+    versionModeDescription:
+        'Light version uses smaller data size, normal version tries to receive images as base64 encoded.',
+    theme: 'Theme',
+    darkTheme: 'Dark',
+    lightTheme: 'Light',
+    themeDescription: 'Choose between dark and light theme for the application.',
+    language: 'Language',
+    english: 'English',
+    persian: 'فارسی',
+    languageDescription: 'Select your preferred language for the interface.',
+    restoreDefaults: 'Restore Defaults',
+    restoreDefaultsDescription: 'Clear all cached data and restore default channel list.',
+    settingsRestored: 'Settings restored successfully!',
+    confirmRestoreDefaults:
+        'Are you sure you want to restore default settings? This will clear all cached data.'
 };

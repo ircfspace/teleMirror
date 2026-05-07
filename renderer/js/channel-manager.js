@@ -451,7 +451,7 @@ class ChannelManager {
             return;
         }
 
-        container.innerHTML = `<div style="text-align: center; padding: 20px; color: #8a9ba8;">${I18n.t('loadingMessages')}</div>`;
+        container.innerHTML = `<div class="loading-message"><div class="loading-spinner"></div>${I18n.t('loadingMessages')}</div>`;
 
         let disconnectProgress;
         let progressTimeout;
@@ -697,18 +697,13 @@ class ChannelManager {
 
         if (count === 1) {
             // Single image - full width
-            gridHtml += `<img src="${photos[0].thumb || photos[0].url}" alt="Photo" style="width: 100%; height: auto; border-radius: 8px; object-fit: cover;" />`;
+            gridHtml += this.getPhotoHtml(photos[0]);
         } else if (count === 2) {
             // Two images - side by side 50%
-            gridHtml += photos
-                .map(
-                    (photo) =>
-                        `<img src="${photo.thumb || photo.url}" alt="Photo" style="width: 50%; height: 120px; border-radius: 8px; object-fit: cover;" />`
-                )
-                .join('');
+            gridHtml += photos.map((photo) => this.getPhotoHtml(photo, '50%')).join('');
         } else if (count === 3) {
             // Three images - first full width, next two side by side 50%
-            gridHtml += `<img src="${photos[0].thumb || photos[0].url}" alt="Photo" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 4px; object-fit: cover;" />`;
+            gridHtml += this.getPhotoHtml(photos[0]);
             gridHtml += '<div style="display: flex; gap: 4px;">';
             gridHtml += photos
                 .slice(1)
@@ -779,6 +774,16 @@ class ChannelManager {
 
         gridHtml += '</div>';
         return gridHtml;
+    }
+
+    getPhotoHtml(photo, width = '100%') {
+        // Check if photo is base64 data
+        if (photo.url && photo.url.startsWith('data:image/')) {
+            return `<img src="${photo.url}" alt="Photo" style="width: ${width}; height: auto; border-radius: 8px; object-fit: cover;" />`;
+        }
+
+        // Regular URL image
+        return `<img src="${photo.thumb || photo.url}" alt="Photo" style="width: ${width}; height: auto; border-radius: 8px; object-fit: cover;" />`;
     }
 
     setupEventListeners() {

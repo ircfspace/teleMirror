@@ -64,14 +64,14 @@ async function createServer(port) {
     });
 
     app.post('/fetch', async (req, res) => {
-        const { url, requestId, lang } = req.body;
+        const { url, requestId, lang, versionMode } = req.body;
         const requestLang =
             requestId && activeRequests.has(requestId)
                 ? activeRequests.get(requestId).lang
                 : lang || 'en';
 
         // Create a new FlowManager per request with language context
-        const flowManager = new FlowManager(requestLang);
+        const flowManager = new FlowManager(requestLang, versionMode);
 
         // Set up progress listener if requestId provided
         if (requestId && activeRequests.has(requestId)) {

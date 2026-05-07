@@ -3,8 +3,9 @@ const axios = require('axios');
 const { ServerI18n } = require('./i18n');
 
 class FlowManager {
-    constructor(lang = 'en') {
+    constructor(lang = 'en', versionMode = 'light') {
         this.lang = lang;
+        this.versionMode = versionMode || 'light';
         this.httpClient = new HttpClient(lang);
         this.steps = {
             CHECK_CONNECTION: 'check_connection',
@@ -189,7 +190,7 @@ class FlowManager {
                     status: 200,
                     headers: {},
                     responseTime: 0,
-                    url: `https://raw.githubusercontent.com/ircfspace/teleFeed/refs/heads/export/${username}.json`,
+                    url: this.getGitHubUrl(username),
                     source: 'github',
                     online: true,
                     flow: flowType
@@ -239,8 +240,7 @@ class FlowManager {
      */
     async fetchGitHubJsonData(username) {
         try {
-            const lowercaseUsername = username.toLowerCase();
-            const githubUrl = `https://raw.githubusercontent.com/ircfspace/teleFeed/refs/heads/export/${lowercaseUsername}.json`;
+            const githubUrl = this.getGitHubUrl(username);
 
             console.log('Fetching GitHub JSON from:', githubUrl);
 
@@ -262,6 +262,20 @@ class FlowManager {
         } catch (error) {
             console.log('GitHub JSON fetch error:', error.message);
             return null;
+        }
+    }
+
+    /**
+     * Get GitHub URL based on version mode
+     * @param {string} username - Telegram channel username
+     * @returns {string} - GitHub URL
+     */
+    getGitHubUrl(username) {
+        const lowercaseUsername = username.toLowerCase();
+        if (this.versionMode === 'normal') {
+            return `https://raw.githubusercontent.com/ircfspace/teleFeed/refs/heads/export/${lowercaseUsername}_base64.json`;
+        } else {
+            return `https://raw.githubusercontent.com/ircfspace/teleFeed/refs/heads/export/${lowercaseUsername}.json`;
         }
     }
 
@@ -296,7 +310,7 @@ class FlowManager {
                     views: post.views || 0,
                     author: post.sender_name || converted.channel.title,
                     isOwn: false,
-                    media: [] // GitHub JSON doesn't seem to include media
+                    media: post.media || [] // Include media from JSON (base64 images)
                 })); // Keep original order from GitHub data
             }
 

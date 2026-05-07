@@ -11,11 +11,12 @@ contextBridge.exposeInMainWorld('api', {
     },
     fetchUrl: async (url, requestId) => {
         const lang = localStorage.getItem('appLanguage') || 'en';
+        const versionMode = localStorage.getItem('versionMode') || 'light';
         const port = await ipcRenderer.invoke('get-server-port');
         const res = await fetch(`http://localhost:${port}/fetch`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, requestId, lang })
+            body: JSON.stringify({ url, requestId, lang, versionMode })
         });
 
         return res.json();
