@@ -65,6 +65,10 @@ class PersianCalendar {
                 return dateString;
             }
 
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const time = `${hours}:${minutes}`;
+
             const today = new Date();
             const todayYear = today.getFullYear();
             const todayMonth = today.getMonth() + 1;
@@ -82,24 +86,18 @@ class PersianCalendar {
                     date.getDate() === today.getDate() - 1;
 
                 if (isToday) {
-                    return I18n.t('today');
+                    return `${I18n.t('today')} - ${time}`;
                 } else if (isYesterday) {
-                    return I18n.t('yesterday');
+                    return `${I18n.t('yesterday')} - ${time}`;
                 } else {
-                    return date.toLocaleDateString('en-US', {
+                    const dateStr = date.toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
                     });
+                    return `${dateStr} - ${time}`;
                 }
             }
-
-            console.log(
-                'Converting to Persian date:',
-                date.getFullYear(),
-                date.getMonth() + 1,
-                date.getDate()
-            );
 
             // Convert to Persian calendar
             const [persianYear, persianMonth, persianDay] = this.gregorianToPersian(
@@ -134,19 +132,19 @@ class PersianCalendar {
                 persianMonth === todayPersianMonth &&
                 persianDay === todayPersianDay
             ) {
-                return I18n.t('today');
+                return `${I18n.t('today')} - ${time}`;
             } else if (
                 persianYear === todayPersianYear &&
                 persianMonth === todayPersianMonth &&
                 persianDay === todayPersianDay - 1
             ) {
-                return I18n.t('yesterday');
+                return `${I18n.t('yesterday')} - ${time}`;
             } else if (persianYear === todayPersianYear && persianMonth === todayPersianMonth) {
-                return `${persianDay} ${persianMonths[persianMonth - 1]}`;
+                return `${persianDay} ${persianMonths[persianMonth - 1]} - ${time}`;
             } else if (persianYear === todayPersianYear) {
-                return `${persianDay} ${persianMonths[persianMonth - 1]}`;
+                return `${persianDay} ${persianMonths[persianMonth - 1]} - ${time}`;
             } else {
-                return `${persianDay} ${persianMonths[persianMonth - 1]} ${persianYear}`;
+                return `${persianDay} ${persianMonths[persianMonth - 1]} ${persianYear} - ${time}`;
             }
         } catch (error) {
             console.error('Persian date formatting error:', error, 'for date:', dateString);
