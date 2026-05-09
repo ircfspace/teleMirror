@@ -1059,6 +1059,75 @@ body.light-theme .loading-message {
     color: #6c757d;
 }
 
+/* Shimmer Loading Styles */
+.shimmer-message {
+    opacity: 0.7;
+}
+
+.shimmer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #2a3f4a 25%, #3a5668 50%, #2a3f4a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.shimmer-line {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #2a3f4a 25%, #3a5668 50%, #2a3f4a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    margin-bottom: 6px;
+}
+
+.shimmer-author {
+    width: 80px;
+    height: 14px;
+}
+
+.shimmer-time {
+    width: 60px;
+    height: 12px;
+}
+
+.shimmer-text-1 {
+    width: 100%;
+    height: 16px;
+}
+
+.shimmer-text-2 {
+    width: 85%;
+    height: 14px;
+}
+
+.shimmer-text-3 {
+    width: 60%;
+    height: 14px;
+    margin-bottom: 0;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Light theme shimmer */
+body.light-theme .shimmer-avatar {
+    background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+    background-size: 200% 100%;
+}
+
+body.light-theme .shimmer-line {
+    background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+    background-size: 200% 100%;
+}
+
 /* Window Control Buttons */
 .window-controls {
     display: flex;

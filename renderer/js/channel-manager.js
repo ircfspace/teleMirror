@@ -441,6 +441,31 @@ class ChannelManager {
     `;
     }
 
+    showShimmerLoading() {
+        const container = document.getElementById('messageContainer');
+        container.innerHTML = '';
+        
+        for (let i = 0; i < 3; i++) {
+            const shimmerPost = document.createElement('div');
+            shimmerPost.className = 'message shimmer-message';
+            shimmerPost.innerHTML = `
+                <div class="message-avatar shimmer-avatar"></div>
+                <div class="message-content">
+                    <div class="message-header-info">
+                        <div class="shimmer-line shimmer-author"></div>
+                        <div class="shimmer-line shimmer-time"></div>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="shimmer-line shimmer-text-1"></div>
+                        <div class="shimmer-line shimmer-text-2"></div>
+                        <div class="shimmer-line shimmer-text-3"></div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(shimmerPost);
+        }
+    }
+
     async loadChannelMessages(username) {
         // Prevent concurrent loading
         if (this.isLoading) {
@@ -451,6 +476,9 @@ class ChannelManager {
         this.isLoading = true;
         const container = document.getElementById('messageContainer');
 
+        // Clear previous channel's posts immediately
+        container.innerHTML = '';
+
         // Check cache first
         const cachedData = this.getCachedData(username);
         if (cachedData) {
@@ -460,7 +488,8 @@ class ChannelManager {
             return;
         }
 
-        container.innerHTML = `<div class="loading-message"><div class="loading-spinner"></div>${I18n.t('loadingMessages')}</div>`;
+        // Show shimmer loading instead of simple loading
+        this.showShimmerLoading();
 
         let disconnectProgress;
         let progressTimeout;
@@ -852,13 +881,17 @@ class ChannelManager {
 
     // Pagination methods
     initializePagination(posts) {
+        // Clear all previous data immediately
+        this.pagination.allPosts = [];
+        this.pagination.displayedPosts = [];
+        this.pagination.displayedPostIds.clear();
+        this.pagination.currentPage = 0;
+        this.pagination.isLoadingMore = false;
+        
         // Sort posts: oldest to newest (for proper pagination)
         const sortedPosts = this.sortPostsByNewest(posts);
         
         this.pagination.allPosts = sortedPosts;
-        this.pagination.currentPage = 0;
-        this.pagination.displayedPosts = [];
-        this.pagination.displayedPostIds.clear();
         this.pagination.loadedRange = {
             start: Math.max(0, sortedPosts.length - this.pagination.postsPerPage),
             end: sortedPosts.length
