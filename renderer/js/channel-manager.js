@@ -29,7 +29,11 @@ class ChannelManager {
                 { username: 'vahidonline', name: 'وحید آنلاین', loading: false },
                 { username: 'persianvpnhub', name: 'فیلترشکن رایگان', loading: false },
                 { username: 'iranintltv', name: 'ایران اینترنشنال', loading: false },
-                { username: 'OfficialRezaPahlavi', name: 'Reza Pahlavi | رضا پهلوی', loading: false },
+                {
+                    username: 'OfficialRezaPahlavi',
+                    name: 'Reza Pahlavi | رضا پهلوی',
+                    loading: false
+                },
                 { username: 'netblocks', name: 'نت‌بلاکس', loading: false },
                 { username: 'mamlekate', name: 'مملکته', loading: false },
                 { username: 'dw_persian', name: 'دویچه‌‌وله فارسی', loading: false },
@@ -451,7 +455,7 @@ class ChannelManager {
     showShimmerLoading() {
         const container = document.getElementById('messageContainer');
         container.innerHTML = '';
-        
+
         for (let i = 0; i < 3; i++) {
             const shimmerPost = document.createElement('div');
             shimmerPost.className = 'message shimmer-message';
@@ -650,10 +654,10 @@ class ChannelManager {
 
         // Initialize pagination with new data
         this.initializePagination(data.posts || []);
-        
+
         // Render first page of posts
         this.renderPostsPage();
-        
+
         // Setup scroll detection for load more
         this.setupScrollDetection();
     }
@@ -894,10 +898,10 @@ class ChannelManager {
         this.pagination.displayedPostIds.clear();
         this.pagination.currentPage = 0;
         this.pagination.isLoadingMore = false;
-        
+
         // Sort posts: oldest to newest (for proper pagination)
         const sortedPosts = this.sortPostsByNewest(posts);
-        
+
         this.pagination.allPosts = sortedPosts;
         this.pagination.loadedRange = {
             start: Math.max(0, sortedPosts.length - this.pagination.postsPerPage),
@@ -914,7 +918,7 @@ class ChannelManager {
                 const idB = parseInt(b.id) || 0;
                 return idA - idB; // Lowest ID first (oldest to newest)
             }
-            
+
             // Fallback to time sorting
             const timeA = new Date(a.time || 0).getTime();
             const timeB = new Date(b.time || 0).getTime();
@@ -924,28 +928,31 @@ class ChannelManager {
 
     renderPostsPage() {
         const container = document.getElementById('messageContainer');
-        
+
         // Get posts from loaded range (newest posts at end)
-        let postsToShow = this.pagination.allPosts.slice(this.pagination.loadedRange.start, this.pagination.loadedRange.end);
-        
+        let postsToShow = this.pagination.allPosts.slice(
+            this.pagination.loadedRange.start,
+            this.pagination.loadedRange.end
+        );
+
         // Filter out already displayed posts to prevent duplicates
-        postsToShow = postsToShow.filter(post => {
+        postsToShow = postsToShow.filter((post) => {
             const postId = post.id || post.time || JSON.stringify(post);
             return !this.pagination.displayedPostIds.has(postId);
         });
-        
+
         // Add new posts to displayed posts (at the end for newer posts)
         this.pagination.displayedPosts = [...this.pagination.displayedPosts, ...postsToShow];
-        
+
         // Track displayed post IDs
-        postsToShow.forEach(post => {
+        postsToShow.forEach((post) => {
             const postId = post.id || post.time || JSON.stringify(post);
             this.pagination.displayedPostIds.add(postId);
         });
-        
+
         // Clear container and render all displayed posts
         container.innerHTML = '';
-        
+
         if (this.pagination.displayedPosts.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 20px; color: #8a9ba8;">
@@ -954,7 +961,7 @@ class ChannelManager {
             `;
             return;
         }
-        
+
         // Add load more spinner at top if there are more posts
         if (this.pagination.hasMorePosts && !this.pagination.isLoadingMore) {
             const loadMoreEl = document.createElement('div');
@@ -968,18 +975,18 @@ class ChannelManager {
             `;
             container.appendChild(loadMoreEl);
         }
-        
+
         // Render posts (oldest at top, newest at bottom)
         this.pagination.displayedPosts.forEach((post) => {
             const messageEl = this.createMessageElement(post);
             container.appendChild(messageEl);
         });
-        
+
         // Insert ads after all messages are rendered
         if (typeof adService !== 'undefined' && this.pagination.displayedPosts.length > 0) {
             adService.insertAd(container, this.pagination.displayedPosts);
         }
-        
+
         // Scroll to bottom to show newest messages on first load
         if (this.pagination.currentPage === 0) {
             setTimeout(() => {
@@ -1023,21 +1030,19 @@ class ChannelManager {
 
             if (videos.length > 0) {
                 mediaHtml += videos
-                    .map(
-                        (video) => {
-                            const thumbnailUrl = video.thumb || '';
-                            const hasThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
-                            const backgroundStyle = hasThumbnail 
-                                ? `background-image: url('${thumbnailUrl}'); background-size: cover; background-position: center top;`
-                                : 'background: #1a1a1b;';
-                            
-                            return `<div style="${backgroundStyle} color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px; min-height: 120px; position: relative; display: flex; align-items: center; justify-content: center;">
+                    .map((video) => {
+                        const thumbnailUrl = video.thumb || '';
+                        const hasThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
+                        const backgroundStyle = hasThumbnail
+                            ? `background-image: url('${thumbnailUrl}'); background-size: cover; background-position: center top;`
+                            : 'background: #1a1a1b;';
+
+                        return `<div style="${backgroundStyle} color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px; min-height: 120px; position: relative; display: flex; align-items: center; justify-content: center;">
                         <div style="background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 4px;">
                             📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
                         </div>
                     </div>`;
-                        }
-                    )
+                    })
                     .join('');
             }
         }
@@ -1064,97 +1069,116 @@ class ChannelManager {
 
     setupScrollDetection() {
         const container = document.getElementById('messageContainer');
-        
+
         // Remove existing listener
         if (this.scrollHandler) {
             container.removeEventListener('scroll', this.scrollHandler);
         }
-        
+
         // Add new scroll listener
         this.scrollHandler = () => {
-            console.log('Scroll detected:', container.scrollTop, 'hasMorePosts:', this.pagination.hasMorePosts, 'isLoadingMore:', this.pagination.isLoadingMore);
+            console.log(
+                'Scroll detected:',
+                container.scrollTop,
+                'hasMorePosts:',
+                this.pagination.hasMorePosts,
+                'isLoadingMore:',
+                this.pagination.isLoadingMore
+            );
             if (this.pagination.isLoadingMore || !this.pagination.hasMorePosts) {
                 return;
             }
-            
+
             // Check if scrolled to top (show older posts)
             if (container.scrollTop <= 100) {
                 console.log('Loading more posts...');
                 this.loadMorePosts();
             }
         };
-        
+
         container.addEventListener('scroll', this.scrollHandler);
     }
 
     async loadMorePosts() {
-        console.log('loadMorePosts called - isLoadingMore:', this.pagination.isLoadingMore, 'hasMorePosts:', this.pagination.hasMorePosts);
+        console.log(
+            'loadMorePosts called - isLoadingMore:',
+            this.pagination.isLoadingMore,
+            'hasMorePosts:',
+            this.pagination.hasMorePosts
+        );
         if (this.pagination.isLoadingMore || !this.pagination.hasMorePosts) {
             return;
         }
-        
+
         this.pagination.isLoadingMore = true;
-        
+
         // Show loading spinner
         const spinnerEl = document.querySelector('.load-more-spinner');
         if (spinnerEl) {
             spinnerEl.style.display = 'block';
         }
-        
+
         // Simulate loading delay for better UX
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         console.log('Total posts:', this.pagination.allPosts.length);
-        
+
         // Calculate older posts to load (before current loaded range)
         const newEndIndex = this.pagination.loadedRange.start;
         const newStartIndex = Math.max(0, newEndIndex - this.pagination.postsPerPage);
         let postsToShow = this.pagination.allPosts.slice(newStartIndex, newEndIndex);
-        
-        console.log('Posts to show:', postsToShow.length, 'from index', newStartIndex, 'to', newEndIndex);
-        
+
+        console.log(
+            'Posts to show:',
+            postsToShow.length,
+            'from index',
+            newStartIndex,
+            'to',
+            newEndIndex
+        );
+
         if (postsToShow.length === 0) {
             this.pagination.hasMorePosts = false;
             console.log('No more posts to load');
         } else {
             // Update loaded range to include older posts
             this.pagination.loadedRange.start = newStartIndex;
-            
+
             // Add new posts to the beginning of displayed posts (older posts)
             this.pagination.displayedPosts = [...postsToShow, ...this.pagination.displayedPosts];
-            
+
             // Track displayed post IDs
-            postsToShow.forEach(post => {
+            postsToShow.forEach((post) => {
                 const postId = post.id || post.time || JSON.stringify(post);
                 this.pagination.displayedPostIds.add(postId);
             });
-            
+
             // Re-render with new posts
             this.renderPostsWithNewPosts(postsToShow);
-            
+
             // Check if there are more older posts to load
             this.pagination.hasMorePosts = newStartIndex > 0;
             console.log('hasMorePosts updated to:', this.pagination.hasMorePosts);
         }
-        
+
         // Hide loading spinner
         if (spinnerEl) {
             spinnerEl.style.display = 'none';
         }
-        
+
         this.pagination.isLoadingMore = false;
     }
 
     renderPostsWithNewPosts(newPosts) {
         const container = document.getElementById('messageContainer');
         const loadMoreContainer = document.getElementById('loadMoreContainer');
-        
+
         console.log('renderPostsWithNewPosts called with', newPosts.length, 'posts');
-        
+
         // Get current scroll height to maintain position
         const currentScrollHeight = container.scrollHeight;
         const currentScrollTop = container.scrollTop;
-        
+
         // Create and prepend new posts BEFORE the load more container
         newPosts.forEach((post) => {
             const messageEl = this.createMessageElement(post);
@@ -1164,14 +1188,14 @@ class ChannelManager {
                 container.insertBefore(messageEl, container.firstChild);
             }
         });
-        
+
         // Adjust scroll position to maintain visual position
         const newScrollHeight = container.scrollHeight;
         const heightDifference = newScrollHeight - currentScrollHeight;
         container.scrollTop = currentScrollTop + heightDifference;
-        
+
         console.log('Scroll adjustment:', heightDifference, 'new scrollTop:', container.scrollTop);
-        
+
         // Update or remove load more container
         if (loadMoreContainer) {
             if (!this.pagination.hasMorePosts) {

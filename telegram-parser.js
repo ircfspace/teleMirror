@@ -115,7 +115,7 @@ class TelegramParser {
 
         // Extract post ID and link
         const postAttr = postElement.attr('data-post');
-        
+
         if (postAttr) {
             // Extract ID from format "username/postID"
             const parts = postAttr.split('/');
@@ -125,7 +125,7 @@ class TelegramParser {
             // Try to find ID from link elements - look for post-specific links
             const linkElement = postElement.find('a[href*="/"]');
             let foundId = false;
-            
+
             linkElement.each((i, elem) => {
                 if (foundId) return;
                 const href = $(elem).attr('href');
@@ -192,7 +192,7 @@ class TelegramParser {
             } else if (elem.tagName === 'a') {
                 const href = $elem.attr('href') || '';
                 const text = $elem.text().trim();
-                
+
                 // Check if this is a hashtag link (starts with #)
                 if (text.startsWith('#')) {
                     // Convert hashtag to plain text (no link)
