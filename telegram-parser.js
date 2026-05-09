@@ -192,7 +192,15 @@ class TelegramParser {
             } else if (elem.tagName === 'a') {
                 const href = $elem.attr('href') || '';
                 const text = $elem.text().trim();
-                content += `<a href="${href}" target="_blank">${text}</a>`;
+                
+                // Check if this is a hashtag link (starts with #)
+                if (text.startsWith('#')) {
+                    // Convert hashtag to plain text (no link)
+                    content += text;
+                } else {
+                    // Keep regular links as clickable
+                    content += `<a href="${href}" target="_blank">${text}</a>`;
+                }
             } else if (elem.tagName === 'br') {
                 content += '<br>';
             } else if (elem.tagName === 'code') {
