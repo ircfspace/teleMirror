@@ -2,7 +2,7 @@
 class ThemeManager {
     static init() {
         // Load saved theme or default to dark
-        const savedTheme = localStorage.getItem('telegramTheme') || 'dark';
+        const savedTheme = localStorage.getItem('appTheme') || 'dark';
         const body = document.body;
         const themeIcon = document.querySelector('#themeSwitchBottom .menu-icon');
 
@@ -34,12 +34,12 @@ class ThemeManager {
             // Switch to dark
             body.classList.remove('light-theme');
             themeIcon.textContent = '🌙';
-            localStorage.setItem('telegramTheme', 'dark');
+            localStorage.setItem('appTheme', 'dark');
         } else {
             // Switch to light
             body.classList.add('light-theme');
             themeIcon.textContent = '☀️';
-            localStorage.setItem('telegramTheme', 'light');
+            localStorage.setItem('appTheme', 'light');
         }
     }
 }
