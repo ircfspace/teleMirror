@@ -984,10 +984,19 @@ class ChannelManager {
             if (videos.length > 0) {
                 mediaHtml += videos
                     .map(
-                        (video) =>
-                            `<div style="background: #1a1a1b; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px;">
-                    📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
-                  </div>`
+                        (video) => {
+                            const thumbnailUrl = video.thumb || '';
+                            const hasThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
+                            const backgroundStyle = hasThumbnail 
+                                ? `background-image: url('${thumbnailUrl}'); background-size: cover; background-position: center top;`
+                                : 'background: #1a1a1b;';
+                            
+                            return `<div style="${backgroundStyle} color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 8px; min-height: 120px; position: relative; display: flex; align-items: center; justify-content: center;">
+                        <div style="background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 4px;">
+                            📹 ${I18n.t('video', video.duration || I18n.t('unknown'))}
+                        </div>
+                    </div>`;
+                        }
                     )
                     .join('');
             }
