@@ -20,7 +20,7 @@ class ProgressManager {
         if (container) {
             container.style.display = 'block';
         }
-        
+
         // Disable scrolling when progress bar is shown
         if (messageContainer) {
             messageContainer.classList.add('scroll-disabled');
@@ -47,7 +47,7 @@ class ProgressManager {
         if (container) {
             container.style.display = 'none';
         }
-        
+
         // Re-enable scrolling when progress bar is hidden
         if (messageContainer) {
             messageContainer.classList.remove('scroll-disabled');

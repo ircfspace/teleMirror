@@ -215,7 +215,7 @@ class SettingsManager {
                     keysToRemove.push(key);
                 }
             }
-            keysToRemove.forEach(key => localStorage.removeItem(key));
+            keysToRemove.forEach((key) => localStorage.removeItem(key));
 
             // Clear channel list
             localStorage.removeItem('telegramChannels');
