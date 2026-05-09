@@ -28,7 +28,14 @@ class ChannelManager {
                 },
                 { username: 'vahidonline', name: 'وحید آنلاین', loading: false },
                 { username: 'persianvpnhub', name: 'فیلترشکن رایگان', loading: false },
-                { username: 'iranintltv', name: 'ایران اینترنشنال', loading: false }
+                { username: 'iranintltv', name: 'ایران اینترنشنال', loading: false },
+                { username: 'OfficialRezaPahlavi', name: 'Reza Pahlavi | رضا پهلوی', loading: false },
+                { username: 'netblocks', name: 'نت‌بلاکس', loading: false },
+                { username: 'mamlekate', name: 'مملکته', loading: false },
+                { username: 'dw_persian', name: 'دویچه‌‌وله فارسی', loading: false },
+                { username: 'ManotoTV', name: 'منوتو', loading: false },
+                { username: 'DEJradio', name: 'دژ ایران', loading: false },
+                { username: 'Aalijnab', name: 'عالیجناب', loading: false }
             ];
             this.saveChannels();
             // Set first channel as active
