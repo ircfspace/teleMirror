@@ -205,13 +205,17 @@ class SettingsManager {
             this.versionMode = 'light';
             this.applyVersionMode();
 
+            localStorage.removeItem('appTheme');
+
             // Clear all channel cache
+            const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.startsWith('channel_cache_')) {
-                    localStorage.removeItem(key);
+                    keysToRemove.push(key);
                 }
             }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
 
             // Clear channel list
             localStorage.removeItem('telegramChannels');
