@@ -5,6 +5,7 @@ class ProgressManager {
         const fill = document.getElementById('progressBarFill');
         const percent = document.getElementById('progressPercent');
         const message = document.getElementById('progressMessage');
+        const messageContainer = document.getElementById('messageContainer');
 
         // Reset to initial state (check if elements exist)
         if (fill) {
@@ -19,6 +20,11 @@ class ProgressManager {
         if (container) {
             container.style.display = 'block';
         }
+        
+        // Disable scrolling when progress bar is shown
+        if (messageContainer) {
+            messageContainer.classList.add('scroll-disabled');
+        }
     }
 
     static hide() {
@@ -26,6 +32,7 @@ class ProgressManager {
         const fill = document.getElementById('progressFill');
         const percent = document.getElementById('progressPercent');
         const message = document.getElementById('progressMessage');
+        const messageContainer = document.getElementById('messageContainer');
 
         // Check if elements exist before accessing them
         if (fill) {
@@ -39,6 +46,11 @@ class ProgressManager {
         }
         if (container) {
             container.style.display = 'none';
+        }
+        
+        // Re-enable scrolling when progress bar is hidden
+        if (messageContainer) {
+            messageContainer.classList.remove('scroll-disabled');
         }
     }
 

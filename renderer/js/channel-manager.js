@@ -456,7 +456,7 @@ class ChannelManager {
         const container = document.getElementById('messageContainer');
         container.innerHTML = '';
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 5; i++) {
             const shimmerPost = document.createElement('div');
             shimmerPost.className = 'message shimmer-message';
             shimmerPost.innerHTML = `

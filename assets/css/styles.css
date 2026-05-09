@@ -1128,6 +1128,12 @@ body.light-theme .shimmer-line {
     background-size: 200% 100%;
 }
 
+/* Disable scrolling when shimmer is active */
+.message-container.scroll-disabled {
+    overflow-y: hidden;
+    pointer-events: none;
+}
+
 /* Window Control Buttons */
 .window-controls {
     display: flex;
